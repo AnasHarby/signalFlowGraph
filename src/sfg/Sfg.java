@@ -105,9 +105,9 @@ public class Sfg {
             this.loopList.removeAll(Arrays.asList(loops));
         }
 
-        public boolean touches(final Path loop) {
+        public boolean touches(final Path path) {
             for (Path loopInGroup : this.loopList)
-                if (loop.touches(loopInGroup))
+                if (path.touches(loopInGroup))
                     return true;
             return false;
         }
@@ -121,22 +121,26 @@ public class Sfg {
     }
 
     public static class LoopGroupContainer {
-        private List<LoopGroup> container = null;
+        private List<LoopGroup> groupList = null;
 
         public LoopGroupContainer() {
-            this.container = new ArrayList<>();
+            this.groupList = new ArrayList<>();
         }
 
         public void addLoopGroups(final LoopGroup... loopGroups) {
-            this.container.addAll(Arrays.asList(loopGroups));
+            this.groupList.addAll(Arrays.asList(loopGroups));
         }
 
         public int size() {
-            return this.container.size();
+            return this.groupList.size();
         }
 
         public boolean empty() {
             return size() == 0;
+        }
+
+        public List<LoopGroup> getGroupList() {
+            return groupList;
         }
 
         public double getGain() {
@@ -144,17 +148,32 @@ public class Sfg {
         }
     }
 
+    public static class Delta {
+        private List<LoopGroupContainer> containerList = null;
+
+        public Delta() {
+            containerList = new ArrayList<>();
+        }
+
+        public void addContainers(final LoopGroupContainer... containers) {
+            this.containerList.addAll(Arrays.asList(containers));
+        }
+
+        public List<LoopGroupContainer> getContainerList() {
+            return containerList;
+        }
+    }
+
     private Map<Node, List<Edge>> adj = null;
     private List<Node> nodeList = null;
     public List<Path> forwardPaths = null; //made public for testing.
     public List<Path> loops = null;
-    private List<LoopGroupContainer> nonTouchingLevels = null;
+    private Delta delta = null;
+    private Map<Path, Delta> forwardPathsDeltas = null;
 
     public Sfg() {
         adj = new HashMap<>();
         nodeList = new ArrayList<>();
-        forwardPaths = new ArrayList<>();
-        loops = new ArrayList<>();
     }
 
     public void addNodes(final Node... nodes) {
@@ -172,7 +191,8 @@ public class Sfg {
     public double solve(final Node start, final Node end) {
         this.forwardPaths = getForwardPaths(start, end, this.adj);
         this.loops = getLoops(this.nodeList, this.adj);
-        this.nonTouchingLevels = getNonTouchingLoops(this.loops);
+        this.delta = getDelta(this.loops);
+        this.forwardPathsDeltas = getForwardPathsDeltas(this.forwardPaths, this.delta);
         return 0.0;
     }
 
@@ -258,24 +278,20 @@ public class Sfg {
         return false;
     }
 
-    private List<LoopGroupContainer> getNonTouchingLoops(final List<Path> loops) {
-        // L1   (L1, L2)    (L1, L2, L4)
-        // L2   (L2, L4)
-        // L3
-        // L4
-        List<LoopGroupContainer> ret = new ArrayList<>();
+    private Delta getDelta(final List<Path> loops) {
+        Delta ret = new Delta();
         for (int i = 1; i <= loops.size(); i++) {
             LoopGroupContainer nextContainer = getNextNonTouchingContainer(i, 0,
                     new LoopGroupContainer(), new LoopGroup(), loops);
             if (nextContainer.empty())
                 break;
-            ret.add(nextContainer);
+            ret.addContainers(nextContainer);
         }
         return ret;
     }
 
-    final LoopGroupContainer getNextNonTouchingContainer(final int rem,
-                                                         final int i,final
+    private LoopGroupContainer getNextNonTouchingContainer(final int rem,
+                                                         final int i, final
                                                          LoopGroupContainer ret,
                                                          final LoopGroup loopGroup,
                                                          final List<Path> loops) {
@@ -290,6 +306,24 @@ public class Sfg {
             loopGroup.removeLoops(loops.get(i));
         }
         getNextNonTouchingContainer(rem, i + 1, ret, loopGroup, loops);
+        return ret;
+    }
+
+    private Map<Path, Delta> getForwardPathsDeltas(final List<Path> forwardPaths,
+                                                   final Delta delta) {
+        Map<Path, Delta> ret = new HashMap<>();
+        for (Path path : forwardPaths) {
+            Delta pathDelta = new Delta();
+            for (LoopGroupContainer container : delta.containerList) {
+                LoopGroupContainer pathGroupContainer = new LoopGroupContainer();
+                for (LoopGroup group : container.getGroupList())
+                    if (!group.touches(path))
+                        pathGroupContainer.addLoopGroups(group);
+                if (!pathGroupContainer.empty())
+                    pathDelta.addContainers(pathGroupContainer);
+            }
+            ret.put(path, pathDelta);
+        }
         return ret;
     }
 }
