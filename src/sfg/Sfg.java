@@ -46,30 +46,30 @@ public class Sfg {
     }
 
     public static class Path {
-        private List<Edge> edgeSet = null;
-        private List<Node> nodeSet = null;
+        private List<Edge> edgeList = null;
+        private List<Node> nodeList = null;
 
         public Path() {
-            edgeSet = new ArrayList<>();
-            nodeSet = new ArrayList<>();
+            edgeList = new ArrayList<>();
+            nodeList = new ArrayList<>();
         }
 
         public void addEdges(final Edge... edges) {
             for (Edge edge : edges) {
-                edgeSet.add(edge);
+                edgeList.add(edge);
             }
         }
 
         public void addNodes(final Node... nodes) {
             for (Node node : nodes) {
-                nodeSet.add(node);
+                nodeList.add(node);
             }
         }
 
         @Override
         public int hashCode() {
             int hash = 0;
-            for (Edge edge : edgeSet)
+            for (Edge edge : edgeList)
                 hash = (hash + edge.hashCode()) % 100000007;
             hash ^= (hash >>> 20) ^ (hash >>> 12);
             return hash;
@@ -82,8 +82,65 @@ public class Sfg {
     }
 
     private Map<Node, List<Edge>> adj = null;
+    private List<Node> nodeList = null;
+    public List<Path> forwardPaths = null; //made public for testing.
+    private List<Path> loops = null;
 
     public Sfg() {
         adj = new HashMap<>();
+        nodeList = new ArrayList<>();
+        forwardPaths = new ArrayList<>();
+        loops = new ArrayList<>();
+    }
+
+    public void addNodes(final Node... nodes) {
+        for (Node node : nodes)
+            nodeList.add(node);
+    }
+
+    public void addEdges(final Edge... edges) {
+        for (Edge edge : edges) {
+            if (!adj.containsKey(edge.src))
+                adj.put(edge.getSrc(), new ArrayList<>());
+            adj.get(edge.getSrc()).add(edge);
+        }
+    }
+
+    public double solve(final Node start, final Node end) {
+        getForwardPaths(start, end);
+        return 0.0;
+    }
+
+    private void getForwardPaths(final Node start, final Node end) {
+        getForwardPathsUtil(start, end, new Stack<>(), new Stack<>(),
+                new HashMap<>());
+    }
+
+    private void getForwardPathsUtil(final Node curr, final Node end,
+                                     final Stack<Node> nodeStack,
+                                     final Stack<Edge> edgeStack,
+                                     final Map<Node, Boolean> visited) {
+        visited.put(curr, true);
+        nodeStack.push(curr);
+        for (Edge edge : adj.get(curr)) {
+            if (edge.dest.equals(end)) {
+                Path path = new Path();
+                //Creates a new path, adds the last node and edge to it.
+                path.addNodes(nodeStack.toArray(new Node[nodeStack.size()]));
+                path.addNodes(end);
+                path.addEdges(edgeStack.toArray(new Edge[edgeStack.size()]));
+                path.addEdges(edge);
+                //Adds the new path to the forward paths.
+                this.forwardPaths.add(path);
+            } else if (!visited.containsKey(edge.dest) ||
+                    !visited.get(edge.dest)) {
+                edgeStack.push(edge);
+                getForwardPathsUtil(edge.dest, end, nodeStack, edgeStack, visited);
+            }
+        }
+        visited.put(curr, false);
+        nodeStack.pop();
+        if (!nodeStack.empty())
+            edgeStack.pop();
     }
 }
