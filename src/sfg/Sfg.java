@@ -70,7 +70,7 @@ public class Sfg {
         public int hashCode() {
             int hash = 0;
             for (Edge edge : edgeList)
-                hash = (hash + edge.hashCode()) % 100000007;
+                hash = (hash + edge.hashCode()) % 10000007;
             hash ^= (hash >>> 20) ^ (hash >>> 12);
             return hash;
         }
@@ -84,7 +84,7 @@ public class Sfg {
     private Map<Node, List<Edge>> adj = null;
     private List<Node> nodeList = null;
     public List<Path> forwardPaths = null; //made public for testing.
-    private List<Path> loops = null;
+    public List<Path> loops = null;
 
     public Sfg() {
         adj = new HashMap<>();
@@ -108,6 +108,7 @@ public class Sfg {
 
     public double solve(final Node start, final Node end) {
         getForwardPaths(start, end);
+        getLoops();
         return 0.0;
     }
 
@@ -142,5 +143,40 @@ public class Sfg {
         nodeStack.pop();
         if (!nodeStack.empty())
             edgeStack.pop();
+    }
+
+    private void getLoops() {
+        for (Node node : nodeList)
+            getLoopsUtil(node, node, new Stack<>(), new Stack<>(), new HashMap<>());
+    }
+
+    private void getLoopsUtil(final Node curr, final Node dest,
+                              final Stack<Node> nodeStack,
+                              final Stack<Edge> edgeStack,
+                              final Map<Node, Boolean> visited) {
+        if (visited.containsKey(curr) && curr.equals(dest)) {
+            Path loop = new Path();
+            loop.addNodes(nodeStack.toArray(new Node[nodeStack.size()]));
+            loop.addEdges(edgeStack.toArray(new Edge[edgeStack.size()]));
+            if (!isDuplicateLoop(loop))
+                this.loops.add(loop);
+        }
+        for (Edge edge : adj.get(curr))
+            if (!visited.containsKey(edge.dest) || !visited.get(edge.dest)) {
+                visited.put(edge.dest, true);
+                nodeStack.push(curr);
+                edgeStack.push(edge);
+                getLoopsUtil(edge.dest, dest, nodeStack, edgeStack, visited);
+                visited.put(edge.dest, false);
+                nodeStack.pop();
+                edgeStack.pop();
+            }
+    }
+
+    private boolean isDuplicateLoop(final Path loop) {
+        for (Path checkedLoop : loops)
+            if (loop.equals(checkedLoop))
+                return true;
+        return false;
     }
 }
