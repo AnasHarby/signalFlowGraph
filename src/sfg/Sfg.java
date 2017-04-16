@@ -66,6 +66,14 @@ public class Sfg {
             }
         }
 
+        public boolean touches(final Path path) {
+            Set<Edge> edgeSet = new HashSet<>(edgeList);
+            for (Edge edge : path.edgeList)
+                if (edgeSet.contains(edge))
+                    return true;
+            return false;
+        }
+
         @Override
         public int hashCode() {
             int hash = 0;
