@@ -48,6 +48,7 @@ public class Sfg {
     public static class Path {
         private List<Edge> edgeList = null;
         private List<Node> nodeList = null;
+        private double gain = 1;
 
         public Path() {
             this.edgeList = new ArrayList<>();
@@ -56,6 +57,8 @@ public class Sfg {
 
         public void addEdges(final Edge... edges) {
             this.edgeList.addAll(Arrays.asList(edges));
+            for (Edge edge : edges)
+                this.gain *= edge.getGain();
         }
 
         public void addNodes(final Node... nodes) {
@@ -83,26 +86,34 @@ public class Sfg {
         public boolean equals(final Object obj) {
             return getClass() == obj.getClass() && hashCode() == obj.hashCode();
         }
+
+        public double getGain() {
+            return this.gain;
+        }
     }
 
     public static class LoopGroup {
         private List<Path> loopList = null;
+        private double gain = 1;
 
         public LoopGroup() {
             this.loopList = new ArrayList<>();
         }
 
         public double getGain() {
-            //Product of all loop gains.
-            return 0;
+            return this.gain;
         }
 
         public void addLoops(final Path... loops) {
             this.loopList.addAll(Arrays.asList(loops));
+            for (Path loop : loops)
+                gain *= loop.getGain();
         }
 
         public void removeLoops(final Path... loops) {
             this.loopList.removeAll(Arrays.asList(loops));
+            for (Path loop : loops)
+                gain /= loop.getGain();
         }
 
         public boolean touches(final Path path) {
@@ -122,13 +133,18 @@ public class Sfg {
 
     public static class LoopGroupContainer {
         private List<LoopGroup> groupList = null;
+        private double gain = 0;
+        private int degree = 0;
 
-        public LoopGroupContainer() {
+        public LoopGroupContainer(final int degree) {
             this.groupList = new ArrayList<>();
+            this.degree = degree;
         }
 
         public void addLoopGroups(final LoopGroup... loopGroups) {
             this.groupList.addAll(Arrays.asList(loopGroups));
+            for (LoopGroup group : loopGroups)
+                gain += group.getGain();
         }
 
         public int size() {
@@ -144,12 +160,17 @@ public class Sfg {
         }
 
         public double getGain() {
-            return 0;
+            return this.gain;
+        }
+
+        public int getDegree() {
+            return degree;
         }
     }
 
     public static class Delta {
         private List<LoopGroupContainer> containerList = null;
+        private double gain = 1;
 
         public Delta() {
             containerList = new ArrayList<>();
@@ -157,10 +178,18 @@ public class Sfg {
 
         public void addContainers(final LoopGroupContainer... containers) {
             this.containerList.addAll(Arrays.asList(containers));
+            for (LoopGroupContainer container : containers) {
+                this.gain += container.getDegree() % 2 == 0 ? container.getGain()
+                    : -1 * container.getGain();
+            }
         }
 
         public List<LoopGroupContainer> getContainerList() {
-            return containerList;
+            return this.containerList;
+        }
+
+        public double getGain() {
+            return this.gain;
         }
     }
 
@@ -193,7 +222,7 @@ public class Sfg {
         this.loops = getLoops(this.nodeList, this.adj);
         this.delta = getDelta(this.loops);
         this.forwardPathsDeltas = getForwardPathsDeltas(this.forwardPaths, this.delta);
-        return 0.0;
+        return getResult(this.delta, this.forwardPathsDeltas, this.forwardPaths);
     }
 
     private List<Path> getForwardPaths(final Node start, final Node end,
@@ -282,7 +311,7 @@ public class Sfg {
         Delta ret = new Delta();
         for (int i = 1; i <= loops.size(); i++) {
             LoopGroupContainer nextContainer = getNextNonTouchingContainer(i, 0,
-                    new LoopGroupContainer(), new LoopGroup(), loops);
+                    new LoopGroupContainer(i), new LoopGroup(), loops);
             if (nextContainer.empty())
                 break;
             ret.addContainers(nextContainer);
@@ -315,7 +344,8 @@ public class Sfg {
         for (Path path : forwardPaths) {
             Delta pathDelta = new Delta();
             for (LoopGroupContainer container : delta.containerList) {
-                LoopGroupContainer pathGroupContainer = new LoopGroupContainer();
+                LoopGroupContainer pathGroupContainer = new LoopGroupContainer(
+                        container.getDegree());
                 for (LoopGroup group : container.getGroupList())
                     if (!group.touches(path))
                         pathGroupContainer.addLoopGroups(group);
@@ -325,5 +355,16 @@ public class Sfg {
             ret.put(path, pathDelta);
         }
         return ret;
+    }
+
+    private double getResult(final Delta delta, final Map<Path, Delta>
+            forwardPathsDeltas, final List<Path> forwardPaths) {
+        double res = 0;
+        for (Path path : forwardPaths) {
+            double pathGain = path.getGain() * forwardPathsDeltas.get(path).getGain();
+            res += pathGain;
+        }
+        res /= delta.getGain();
+        return res;
     }
 }

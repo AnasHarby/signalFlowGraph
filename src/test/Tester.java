@@ -64,4 +64,22 @@ public class Tester {
         sfg.solve(nodes.get(0), nodes.get(5));
         Assert.assertTrue(sfg.loops.size() == 4);
     }
+
+    @Test
+    public void testAll() {
+        Sfg sfg = new Sfg();
+        List<Sfg.Node> nodes = new ArrayList<>();
+        for (int i = 0; i < 8; i++)
+            nodes.add(new Sfg.Node("n" + i));
+        sfg.addNodes(nodes.toArray(new Sfg.Node[nodes.size()]));
+        for (int i = 0; i < 7; i++)
+            sfg.addEdges(new Sfg.Edge(nodes.get(i), nodes.get(i + 1), i + 1));
+        sfg.addEdges(new Sfg.Edge(nodes.get(7), nodes.get(1), 8),
+                new Sfg.Edge(nodes.get(2), nodes.get(1), 9),
+                new Sfg.Edge(nodes.get(4), nodes.get(3), 10),
+                new Sfg.Edge(nodes.get(7), nodes.get(6), 11));
+        System.out.println(sfg.solve(nodes.get(0), nodes.get(5)));
+        Assert.assertEquals(0.100620049,
+                sfg.solve(nodes.get(0), nodes.get(5)), 0.0001);
+    }
 }
