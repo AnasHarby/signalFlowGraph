@@ -3,10 +3,9 @@ package gui;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.DoubleValidator;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
@@ -34,6 +33,9 @@ public class Controller {
     private JFXTextArea logger; // Value injected by FXMLLoader
 
     @FXML
+    private ScrollPane scrollPane;
+
+    @FXML
     void addEdge(MouseEvent event) {
 
     }
@@ -45,7 +47,7 @@ public class Controller {
 
     @FXML
     void getResult(MouseEvent event) {
-
+        this.logger.appendText("Test Scroll!\n");
     }
 
     @FXML
@@ -54,16 +56,16 @@ public class Controller {
         assert canvas != null;
         assert gainTF != null;
         assert logger != null;
+
         DoubleValidator dv = new DoubleValidator();
         this.gainTF.getValidators().add(dv);
         dv.setMessage("Double value!");
-        this.gainTF.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue)
-                    gainTF.validate();
-            }
+
+        this.gainTF.focusedProperty().addListener((e, old, newVal) -> {
+            if (!newVal) this.gainTF.validate();
         });
+
+        this.logger.textProperty().addListener(e -> logger.setScrollTop(Double.MAX_VALUE));
     }
 }
 
