@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-<?import com.jfoenix.controls.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextArea?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.ScrollPane?>
@@ -34,8 +35,6 @@
                                         <JFXButton buttonType="RAISED" minWidth="75.0" onAction="#addNode"
                                                    ripplerFill="#e0f2f1" style="-fx-background-color: #B2DFDB;"
                                                    text="Node"/>
-                                        <JFXTextField fx:id="gainTF" alignment="CENTER" focusColor="#80cbc4"
-                                                      labelFloat="true" promptText="Gain" unFocusColor="#004d40"/>
                                         <JFXButton buttonType="RAISED" layoutX="60.0" layoutY="60.0" minWidth="75.0"
                                                    onMouseClicked="#addEdge" ripplerFill="#e0f2f1"
                                                    style="-fx-background-color: #B2DFDB;" text="Edge"/>

@@ -1,12 +1,13 @@
 package gui;
 
 import com.jfoenix.controls.*;
-import com.jfoenix.validation.DoubleValidator;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -34,9 +35,6 @@ public class ViewController {
 
     @FXML // fx:id="canvas"
     private StackPane canvas; // Value injected by FXMLLoader
-
-    @FXML // fx:id="gainTF"
-    private JFXTextField gainTF; // Value injected by FXMLLoader
 
     @FXML // fx:id="logger"
     private JFXTextArea logger; // Value injected by FXMLLoader
@@ -67,6 +65,7 @@ public class ViewController {
         JFXTextField gainTf = createTextField("Gain");
 
         VBox vbox = new VBox();
+        vbox.setSpacing(15d);
         vbox.getChildren().add(srcNodeTf);
         vbox.getChildren().add(destNodeTf);
         vbox.getChildren().add(gainTf);
@@ -106,6 +105,12 @@ public class ViewController {
                 addButton.setDisable(true);
         });
 
+        jfxDialog.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE)
+                jfxDialog.close();
+        });
+
+        jfxDialog.setOnDialogOpened(e -> srcNodeTf.requestFocus());
         jfxDialog.show();
     }
 
@@ -126,6 +131,7 @@ public class ViewController {
 
         JFXButton addButton = new JFXButton("Add");
         addButton.setDisable(true);
+        addButton.setDefaultButton(true);
         addButton.setOnAction(e -> {
             addNodeUtil(labelTf.getText());
             jfxDialog.close();
@@ -145,8 +151,13 @@ public class ViewController {
             }
         });
 
+        jfxDialog.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE)
+                jfxDialog.close();
+        });
+
+        jfxDialog.setOnDialogOpened(e -> labelTf.requestFocus());
         jfxDialog.show();
-        labelTf.requestFocus();
     }
 
     private void addNodeUtil(final String label) {
@@ -163,16 +174,7 @@ public class ViewController {
         // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert canvas != null;
-        assert gainTF != null;
         assert logger != null;
-
-        DoubleValidator dv = new DoubleValidator();
-        this.gainTF.getValidators().add(dv);
-        dv.setMessage("Double value!");
-
-        this.gainTF.focusedProperty().addListener((e, old, newVal) -> {
-            if (!newVal) this.gainTF.validate();
-        });
 
         this.logger.textProperty().addListener(e -> logger.setScrollTop(Double.MAX_VALUE));
 
