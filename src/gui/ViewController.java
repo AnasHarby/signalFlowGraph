@@ -51,7 +51,7 @@ public class ViewController {
     public ViewController() {
         this.graph = new SingleGraph("SFG");
         this.sfg = new Sfg();
-        this.graph.addAttribute("ui.stylesheet", "url('file:/home/heshamelsawaf/Documents/signalFlowGraph/src/gui/graph.css')");
+        this.graph.addAttribute("ui.stylesheet", "url('" + this.getClass().getClassLoader().getResource("gui/graph.css") + "')");
     }
 
     @FXML
