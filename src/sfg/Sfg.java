@@ -6,30 +6,43 @@ public class Sfg {
     public List<Path> forwardPaths = null; //made public for testing.
     public List<Path> loops = null;
     private Map<Node, List<Edge>> adj = null;
-    private List<Node> nodeList = null;
+    private Map<String, Node> nodeMap = null;
     private Delta delta = null;
     private Map<Path, Delta> forwardPathsDeltas = null;
 
     public Sfg() {
-        adj = new HashMap<>();
-        nodeList = new ArrayList<>();
+        this.adj = new HashMap<>();
+        this.nodeMap = new HashMap<>();
     }
 
     public void addNodes(final Node... nodes) {
-        this.nodeList.addAll(Arrays.asList(nodes));
+        for (Node node : nodes)
+            this.nodeMap.put(node.getLabel(), node);
     }
 
     public void addEdges(final Edge... edges) {
         for (Edge edge : edges) {
-            if (!adj.containsKey(edge.src))
-                adj.put(edge.getSrc(), new ArrayList<>());
-            adj.get(edge.getSrc()).add(edge);
+            if (!this.adj.containsKey(edge.src))
+                this.adj.put(edge.getSrc(), new ArrayList<>());
+            this.adj.get(edge.getSrc()).add(edge);
         }
+    }
+
+    public void addEdge(final String src, final String dest, double gain) {
+        Node srcNode = this.nodeMap.get(src);
+        Node destNode = this.nodeMap.get(dest);
+        if (!this.adj.containsKey(srcNode))
+            this.adj.put(srcNode, new ArrayList<>());
+        this.adj.get(srcNode).add(new Edge(srcNode, destNode, gain));
+    }
+
+    public Node getNode(final String label) {
+        return this.nodeMap.get(label);
     }
 
     public double solve(final Node start, final Node end) {
         this.forwardPaths = getForwardPaths(start, end, this.adj);
-        this.loops = getLoops(this.nodeList, this.adj);
+        this.loops = getLoops(new ArrayList<>(this.nodeMap.values()), this.adj);
         this.delta = getDelta(this.loops);
         this.forwardPathsDeltas = getForwardPathsDeltas(this.forwardPaths, this.delta);
         return getResult(this.delta, this.forwardPathsDeltas, this.forwardPaths);

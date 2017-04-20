@@ -9,11 +9,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
+import sfg.Sfg;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -46,41 +48,59 @@ public class ViewController {
     private StackPane dialogParent;
 
     private Graph graph;
+    private Sfg sfg;
 
     public ViewController() {
         this.graph = new SingleGraph("SFG");
+        this.sfg = new Sfg();
     }
 
     @FXML
-    void addEdge(MouseEvent event) {
-
-    }
-
-    @FXML
-    void addNode(ActionEvent event) {
+    void addEdge(final MouseEvent event) {
         JFXDialogLayout jfxDialogLayout = new JFXDialogLayout();
-        JFXDialog jfxDialog = new JFXDialog(this.dialogParent, jfxDialogLayout, JFXDialog.DialogTransition.CENTER);
+        JFXDialog jfxDialog = new JFXDialog(this.dialogParent, jfxDialogLayout,
+                JFXDialog.DialogTransition.CENTER);
+        jfxDialogLayout.setHeading(new Text("Add Edge\n"));
 
-        jfxDialogLayout.setHeading(new Text("Add Node\n"));
+        JFXTextField srcNodeTf = createTextField("Source");
+        JFXTextField destNodeTf = createTextField("Destination");
+        JFXTextField gainTf = createTextField("Gain");
 
-        JFXTextField jfxTextField = new JFXTextField();
-        jfxTextField.setPromptText("Label");
-        jfxTextField.setLabelFloat(true);
-
-        jfxDialogLayout.setBody(jfxTextField);
+        VBox vbox = new VBox();
+        vbox.getChildren().add(srcNodeTf);
+        vbox.getChildren().add(destNodeTf);
+        vbox.getChildren().add(gainTf);
+        jfxDialogLayout.setBody(vbox);
 
         JFXButton addButton = new JFXButton("Add");
         addButton.setDisable(true);
-        addButton.setOnAction(e -> jfxDialog.close());
-
+        addButton.setOnAction(e -> {
+            addEdgeUtil(srcNodeTf.getText(), destNodeTf.getText(), Double
+                    .parseDouble(gainTf.getText()));
+            jfxDialog.close();
+        });
 
         JFXButton cancelButton = new JFXButton("Cancel");
         cancelButton.setOnAction(e -> jfxDialog.close());
 
         jfxDialogLayout.setActions(addButton, cancelButton);
 
-        jfxTextField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (isValidNodeLabel(newValue))
+        srcNodeTf.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (isValidEdge(newValue, destNodeTf.getText(), gainTf.getText()))
+                addButton.setDisable(false);
+            else
+                addButton.setDisable(true);
+        });
+
+        destNodeTf.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (isValidEdge(srcNodeTf.getText(), newValue, gainTf.getText()))
+                addButton.setDisable(false);
+            else
+                addButton.setDisable(true);
+        });
+
+        gainTf.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (isValidEdge(srcNodeTf.getText(), destNodeTf.getText(), newValue))
                 addButton.setDisable(false);
             else
                 addButton.setDisable(true);
@@ -89,8 +109,53 @@ public class ViewController {
         jfxDialog.show();
     }
 
+    private void addEdgeUtil(final String src, final String dest, double gain) {
+        this.graph.addEdge(src + dest, src, dest, true);
+        this.sfg.addEdge(src, dest, gain);
+    }
+
     @FXML
-    void getResult(MouseEvent event) {
+    void addNode(final ActionEvent event) {
+        JFXDialogLayout jfxDialogLayout = new JFXDialogLayout();
+        JFXDialog jfxDialog = new JFXDialog(this.dialogParent, jfxDialogLayout,
+                JFXDialog.DialogTransition.CENTER);
+        jfxDialogLayout.setHeading(new Text("Add Node\n"));
+
+        JFXTextField labelTf = createTextField("Label");
+        jfxDialogLayout.setBody(labelTf);
+
+        JFXButton addButton = new JFXButton("Add");
+        addButton.setDisable(true);
+        addButton.setOnAction(e -> {
+            addNodeUtil(labelTf.getText());
+            jfxDialog.close();
+        });
+
+        JFXButton cancelButton = new JFXButton("Cancel");
+        cancelButton.setOnAction(e -> jfxDialog.close());
+
+        jfxDialogLayout.setActions(addButton, cancelButton);
+
+        labelTf.textProperty().addListener((ObservableValue<?
+                extends String> observable, String oldValue, String newValue) -> {
+            if (isValidLabel(newValue) && !nodeExists(newValue))
+                addButton.setDisable(false);
+            else {
+                addButton.setDisable(true);
+            }
+        });
+
+        jfxDialog.show();
+        labelTf.requestFocus();
+    }
+
+    private void addNodeUtil(final String label) {
+        graph.addNode(label);
+        sfg.addNodes(new Sfg.Node(label));
+    }
+
+    @FXML
+    void getResult(final MouseEvent event) {
         this.logger.appendText("Test Scroll!\n");
     }
 
@@ -117,7 +182,6 @@ public class ViewController {
     private void initCanvas() {
         //A must-set property to apply css tp the graph.
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         ViewPanel view = viewer.addDefaultView(false);
         viewer.enableAutoLayout();
@@ -127,8 +191,26 @@ public class ViewController {
         this.canvas.getChildren().add(node);
     }
 
-    private boolean isValidNodeLabel(final String label) {
+    private JFXTextField createTextField(final String prompt) {
+        JFXTextField jfxTextField = new JFXTextField();
+        jfxTextField.setPromptText(prompt);
+        jfxTextField.setLabelFloat(true);
+        return jfxTextField;
+    }
+
+    private boolean isValidLabel(final String label) {
         return !label.isEmpty() && label.matches("[a-zA-Z_]\\w*");
+    }
+
+    private boolean nodeExists(final String label) {
+        return this.sfg.getNode(label) != null;
+    }
+
+    private boolean isValidEdge(final String src, final String dest,
+                                final String gain) {
+        return isValidLabel(src) && isValidLabel(dest) && nodeExists(src) &&
+                nodeExists(dest) && !gain.isEmpty() &&
+                gain.matches("^[+-]?\\d*\\.?\\d*");
     }
 }
 
