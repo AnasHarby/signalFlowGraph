@@ -1,13 +1,15 @@
 package gui;
 
-import com.jfoenix.controls.JFXTextArea;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import com.jfoenix.validation.DoubleValidator;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingNode;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.ViewPanel;
@@ -40,6 +42,9 @@ public class ViewController {
     @FXML
     private ScrollPane scrollPane;
 
+    @FXML
+    private StackPane dialogParent;
+
     private Graph graph;
 
     public ViewController() {
@@ -52,8 +57,36 @@ public class ViewController {
     }
 
     @FXML
-    void addNode(MouseEvent event) {
+    void addNode(ActionEvent event) {
+        JFXDialogLayout jfxDialogLayout = new JFXDialogLayout();
+        JFXDialog jfxDialog = new JFXDialog(this.dialogParent, jfxDialogLayout, JFXDialog.DialogTransition.CENTER);
 
+        jfxDialogLayout.setHeading(new Text("Add Node\n"));
+
+        JFXTextField jfxTextField = new JFXTextField();
+        jfxTextField.setPromptText("Label");
+        jfxTextField.setLabelFloat(true);
+
+        jfxDialogLayout.setBody(jfxTextField);
+
+        JFXButton addButton = new JFXButton("Add");
+        addButton.setDisable(true);
+        addButton.setOnAction(e -> jfxDialog.close());
+
+
+        JFXButton cancelButton = new JFXButton("Cancel");
+        cancelButton.setOnAction(e -> jfxDialog.close());
+
+        jfxDialogLayout.setActions(addButton, cancelButton);
+
+        jfxTextField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (isValidNodeLabel(newValue))
+                addButton.setDisable(false);
+            else
+                addButton.setDisable(true);
+        });
+
+        jfxDialog.show();
     }
 
     @FXML
@@ -92,6 +125,10 @@ public class ViewController {
         SwingNode node = new SwingNode();
         node.setContent(view);
         this.canvas.getChildren().add(node);
+    }
+
+    private boolean isValidNodeLabel(final String label) {
+        return !label.isEmpty() && label.matches("[a-zA-Z_]\\w*");
     }
 }
 
