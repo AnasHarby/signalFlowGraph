@@ -8,11 +8,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
@@ -51,10 +51,11 @@ public class ViewController {
     public ViewController() {
         this.graph = new SingleGraph("SFG");
         this.sfg = new Sfg();
+        this.graph.addAttribute("ui.stylesheet", "url('file:/home/heshamelsawaf/Documents/signalFlowGraph/src/gui/graph.css')");
     }
 
     @FXML
-    void addEdge(final MouseEvent event) {
+    void addEdge(final ActionEvent event) {
         JFXDialogLayout jfxDialogLayout = new JFXDialogLayout();
         JFXDialog jfxDialog = new JFXDialog(this.dialogParent, jfxDialogLayout,
                 JFXDialog.DialogTransition.CENTER);
@@ -73,6 +74,7 @@ public class ViewController {
 
         JFXButton addButton = new JFXButton("Add");
         addButton.setDisable(true);
+        addButton.setDefaultButton(true);
         addButton.setOnAction(e -> {
             addEdgeUtil(srcNodeTf.getText(), destNodeTf.getText(), Double
                     .parseDouble(gainTf.getText()));
@@ -161,13 +163,62 @@ public class ViewController {
     }
 
     private void addNodeUtil(final String label) {
-        graph.addNode(label);
+        Node n = graph.addNode(label);
+        n.addAttribute("ui.label", label);
+        n.addAttribute("ui.class", "big");
         sfg.addNodes(new Sfg.Node(label));
     }
 
     @FXML
-    void getResult(final MouseEvent event) {
-        this.logger.appendText("Test Scroll!\n");
+    void solveGraph(final ActionEvent event) {
+        JFXDialogLayout jfxDialogLayout = new JFXDialogLayout();
+        JFXDialog jfxDialog = new JFXDialog(this.dialogParent, jfxDialogLayout,
+                JFXDialog.DialogTransition.CENTER);
+        jfxDialogLayout.setHeading(new Text("Solve\n"));
+
+        JFXTextField startTF = createTextField("Start");
+        JFXTextField endTF = createTextField("End");
+
+        VBox vbox = new VBox();
+        vbox.setSpacing(15d);
+        vbox.getChildren().add(startTF);
+        vbox.getChildren().add(endTF);
+        jfxDialogLayout.setBody(vbox);
+
+        JFXButton addButton = new JFXButton("Solve");
+        addButton.setDisable(true);
+        addButton.setDefaultButton(true);
+        addButton.setOnAction(e -> {
+            //TODO Solve Graph
+            jfxDialog.close();
+        });
+
+        JFXButton cancelButton = new JFXButton("Cancel");
+        cancelButton.setOnAction(e -> jfxDialog.close());
+
+        jfxDialogLayout.setActions(addButton, cancelButton);
+
+        startTF.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (isValidLabel(newValue) && nodeExists(newValue))
+                addButton.setDisable(false);
+            else
+                addButton.setDisable(true);
+        });
+
+        endTF.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (isValidLabel(newValue) && nodeExists(newValue))
+                addButton.setDisable(false);
+            else
+                addButton.setDisable(true);
+        });
+
+        jfxDialog.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE)
+                jfxDialog.close();
+        });
+
+        jfxDialog.setOnDialogOpened(e -> startTF.requestFocus());
+        jfxDialog.show();
     }
 
     @FXML
