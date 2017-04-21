@@ -230,7 +230,6 @@ public class ViewController {
         addButton.setDisable(true);
         addButton.setDefaultButton(true);
         addButton.setOnAction(e -> {
-            //TODO Solve Graph
             solveGraphUtil(startTF.getText(), endTF.getText());
             jfxDialog.close();
         });
@@ -270,8 +269,10 @@ public class ViewController {
     }
 
     private void solveGraphUtil(final String start, final String end) {
-        double res = this.sfg.solve(this.sfg.getNode(start), this.sfg.getNode(end));
-        logger.appendText("Result = " + res + "\n");
+        Sfg.SfgMetadata metadata = this.sfg.solve(
+                this.sfg.getNode(start), this.sfg.getNode(end));
+        metadata.getForwardPaths().get(0).addNodes(new Sfg.Node("S"));
+        logger.appendText("Result = " + metadata.getResult() + "\n");
     }
 
     @FXML

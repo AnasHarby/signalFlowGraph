@@ -3,8 +3,8 @@ package sfg;
 import java.util.*;
 
 public class Sfg {
-    public List<Path> forwardPaths = null; //made public for testing.
-    public List<Path> loops = null;
+    private List<Path> forwardPaths = null;
+    private List<Path> loops = null;
     private Map<Node, List<Edge>> adj = null;
     private Map<String, Node> nodeMap = null;
     private Delta delta = null;
@@ -31,12 +31,14 @@ public class Sfg {
         return this.nodeMap.get(label);
     }
 
-    public double solve(final Node start, final Node end) {
+    public SfgMetadata solve(final Node start, final Node end) {
         this.forwardPaths = getForwardPaths(start, end, this.adj);
         this.loops = getLoops(new ArrayList<>(this.nodeMap.values()), this.adj);
         this.delta = getDelta(this.loops);
         this.forwardPathsDeltas = getForwardPathsDeltas(this.forwardPaths, this.delta);
-        return getResult(this.delta, this.forwardPathsDeltas, this.forwardPaths);
+        double res = getResult(this.delta, this.forwardPathsDeltas,
+                this.forwardPaths);
+        return new SfgMetadata(res, this.forwardPaths, this.loops);
     }
 
     private List<Path> getForwardPaths(final Node start, final Node end,
@@ -195,6 +197,11 @@ public class Sfg {
         public String getLabel() {
             return label;
         }
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            return new Node(this.label);
+        }
     }
 
     /**
@@ -221,6 +228,12 @@ public class Sfg {
 
         public double getGain() {
             return gain;
+        }
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            return new Edge((Node) this.src.clone(), (Node) this.dest.clone()
+                    , this.gain);
         }
     }
 
@@ -252,6 +265,10 @@ public class Sfg {
             return false;
         }
 
+        public double getGain() {
+            return this.gain;
+        }
+
         @Override
         public int hashCode() {
             int hash = 0;
@@ -266,8 +283,14 @@ public class Sfg {
             return getClass() == obj.getClass() && hashCode() == obj.hashCode();
         }
 
-        public double getGain() {
-            return this.gain;
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            Path clone = new Path();
+            for (Node node : this.nodeList)
+                clone.addNodes((Node) node.clone());
+            for (Edge edge : this.edgeList)
+                clone.addEdges((Edge) edge.clone());
+            return clone;
         }
     }
 
@@ -369,6 +392,42 @@ public class Sfg {
 
         public double getGain() {
             return this.gain;
+        }
+    }
+
+    public static class SfgMetadata {
+        private double result = 0;
+        List<Path> forwardPaths = null;
+        List<Path> loops = null;
+
+        public SfgMetadata(final double result, final List<Path> forwardPaths
+                , final List<Path> loops) {
+            this.result = result;
+            this.forwardPaths = clonePaths(forwardPaths);
+            this.loops = loops;
+        }
+
+        public double getResult() {
+            return this.result;
+        }
+
+        public List<Path> getForwardPaths() {
+            return this.forwardPaths;
+        }
+
+        public List<Path> getLoops() {
+            return this.loops;
+        }
+
+        private List<Path> clonePaths(final List<Path> pathList) {
+            List<Path> clone = new ArrayList<>();
+            try {
+                for (Path path : pathList)
+                    clone.add((Path) path.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();;
+            }
+            return clone;
         }
     }
 }

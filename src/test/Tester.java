@@ -7,7 +7,6 @@ import sfg.Sfg;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Tester {
 
     @Test
@@ -44,8 +43,8 @@ public class Tester {
                 new Sfg.Edge(nodes.get(4), nodes.get(3), 5),
                 new Sfg.Edge(nodes.get(7), nodes.get(6), 5),
                 new Sfg.Edge(nodes.get(3), nodes.get(5), 5));
-        sfg.solve(nodes.get(0), nodes.get(5));
-        Assert.assertTrue(sfg.forwardPaths.size() == 2);
+        Sfg.SfgMetadata metadata = sfg.solve(nodes.get(0), nodes.get(5));
+        Assert.assertTrue(metadata.getForwardPaths().size() == 2);
     }
 
     @Test
@@ -61,8 +60,8 @@ public class Tester {
                 new Sfg.Edge(nodes.get(2), nodes.get(1), 5),
                 new Sfg.Edge(nodes.get(4), nodes.get(3), 5),
                 new Sfg.Edge(nodes.get(7), nodes.get(6), 5));
-        sfg.solve(nodes.get(0), nodes.get(5));
-        Assert.assertTrue(sfg.loops.size() == 4);
+        Sfg.SfgMetadata metadata = sfg.solve(nodes.get(0), nodes.get(5));
+        Assert.assertTrue(metadata.getLoops().size() == 4);
     }
 
     @Test
@@ -78,8 +77,7 @@ public class Tester {
                 new Sfg.Edge(nodes.get(2), nodes.get(1), 9),
                 new Sfg.Edge(nodes.get(4), nodes.get(3), 10),
                 new Sfg.Edge(nodes.get(7), nodes.get(6), 11));
-        System.out.println(sfg.solve(nodes.get(0), nodes.get(5)));
         Assert.assertEquals(0.100620049,
-                sfg.solve(nodes.get(0), nodes.get(5)), 0.0001);
+                sfg.solve(nodes.get(0), nodes.get(5)).getResult(), 0.0001);
     }
 }
