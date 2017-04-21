@@ -379,7 +379,7 @@ public class ViewController {
                                 final String gain) {
         return isValidLabel(src) && isValidLabel(dest) && nodeExists(src) &&
                 nodeExists(dest) && !gain.isEmpty() &&
-                gain.matches("^[+-]?\\d*\\.?\\d*");
+                gain.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
     }
 }
 

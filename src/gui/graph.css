@@ -9,8 +9,9 @@ node.important {
         fill-color: red;
     }
 edge {
-    shape: cubic-curve;
-    text-alignment: along;
+    text-alignment: center;
     text-size: 20;
     text-color: red;
+    text-background-mode: plain;
+
 }
