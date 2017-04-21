@@ -10,5 +10,7 @@ node.important {
     }
 edge {
     shape: cubic-curve;
-
+    text-alignment: along;
+    text-size: 20;
+    text-color: red;
 }

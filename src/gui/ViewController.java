@@ -13,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -135,7 +136,8 @@ public class ViewController {
     }
 
     private void addEdgeUtil(final String src, final String dest, double gain) {
-        this.graph.addEdge(src + dest, src, dest, true);
+        Edge edge = this.graph.addEdge(src + dest, src, dest, true);
+        edge.addAttribute("ui.label", Double.toString(gain));
         this.sfg.addEdge(src, dest, gain);
     }
 
