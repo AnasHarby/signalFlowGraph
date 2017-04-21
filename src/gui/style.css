@@ -1,5 +1,47 @@
 .canvas-boxes {
-    -fx-background-color: #F5F5F5,
-        linear-gradient(from 0.5px 0px to 10.5px 0px, repeat, #009688, transparent 5%),
-        linear-gradient(from 0px 0.5px to 0px 10.5px, repeat, #009688, transparent 5%);
+                    -fx-background-color: #F5F5F5,
+                        linear-gradient(from 0.5px 0px to 10.5px 0px, repeat, #009688, transparent 5%),
+                        linear-gradient(from 0px 0.5px to 0px 10.5px, repeat, #009688, transparent 5%);
 }
+
+.regular-button {
+                    -fx-padding: 0.7em 0.57em;
+                    -fx-font-size: 14px;
+                    -jfx-button-type: RAISED;
+                    -fx-background-color: rgb(77,102,204);
+                    -fx-pref-width: 200;
+                    -fx-text-fill: WHITE;
+                }
+
+.separator      {
+                    -fx-background-color: #009688;
+                }
+
+.text-area      {
+                    -fx-border-color: #00BFA5;
+                }
+
+.dialog-textField         {
+                    -jfx-focus-color:    #FFFFFF;
+                    -jfx-unfocus-color:  #000000;
+                }
+
+.dialog-button {
+                    -fx-padding: 0.7em 0.57em;
+                    -fx-font-size: 14px;
+                    -jfx-button-type: RAISED;
+                    -fx-background-color: rgb(77,102,204);
+                    -fx-text-fill: WHITE;
+                }
+
+.dialog-cancel-button {
+                    -fx-padding: 0.7em 0.57em;
+                    -fx-font-size: 14px;
+                    -jfx-button-type: RAISED;
+                    -fx-background-color: red;
+                    -fx-text-fill: WHITE;
+                }
+
+.fancyText      {
+                    -fx-fill: red;
+                }

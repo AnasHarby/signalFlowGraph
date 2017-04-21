@@ -8,3 +8,7 @@ node {
 node.important {
         fill-color: red;
     }
+edge {
+    shape: cubic-curve;
+
+}

@@ -18,6 +18,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("SFG");
         Scene scene = new Scene(root, 1280, 800);
+        scene.getStylesheets().add(this.getClass().getClassLoader().getResource("gui/style.css").toExternalForm());
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();

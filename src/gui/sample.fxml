@@ -29,18 +29,18 @@
                               AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
                                 <Separator orientation="VERTICAL" prefHeight="200.0"
-                                           style="-fx-background-color: #009688;"/>
+                                           styleClass="separator"/>
                                 <VBox prefWidth="175.0" spacing="30.0" HBox.hgrow="ALWAYS">
                                     <children>
                                         <JFXButton buttonType="RAISED" minWidth="75.0" onAction="#addNode"
-                                                   ripplerFill="#e0f2f1" style="-fx-background-color: #B2DFDB;"
+                                                   ripplerFill="#e0f2f1" styleClass="regular-button"
                                                    text="Node"/>
                                         <JFXButton buttonType="RAISED" layoutX="60.0" layoutY="60.0" minWidth="75.0"
                                                    onAction="#addEdge" ripplerFill="#e0f2f1"
-                                                   style="-fx-background-color: #B2DFDB;" text="Edge"/>
+                                                   styleClass="regular-button" text="Edge"/>
                                         <JFXButton buttonType="RAISED" layoutX="60.0" layoutY="130.0" minWidth="75.0"
                                                    onAction="#solveGraph" ripplerFill="#e0f2f1"
-                                                   style="-fx-background-color: #B2DFDB;" text="Solve"/>
+                                                   styleClass="regular-button" text="Solve"/>
                                     </children>
                                     <padding>
                                         <Insets bottom="60.0" left="60.0" right="60.0" top="60.0"/>
@@ -52,13 +52,13 @@
                 </AnchorPane>
                 <AnchorPane maxHeight="600.0" minHeight="200.0" minWidth="0.0" prefHeight="200.0">
                     <children>
-                        <Separator prefWidth="200.0" style="-fx-background-color: #009688;" AnchorPane.leftAnchor="0.0"
+                        <Separator prefWidth="200.0" styleClass="separator" AnchorPane.leftAnchor="0.0"
                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                         <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true"
                                     AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                                     AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <content>
-                                <JFXTextArea fx:id="logger" editable="false" style="-fx-border-color: #00BFA5;"/>
+                                <JFXTextArea fx:id="logger" editable="false" styleClass="text-area"/>
                             </content>
                         </ScrollPane>
                     </children>

@@ -8,8 +8,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -59,11 +61,17 @@ public class ViewController {
         JFXDialogLayout jfxDialogLayout = new JFXDialogLayout();
         JFXDialog jfxDialog = new JFXDialog(this.dialogParent, jfxDialogLayout,
                 JFXDialog.DialogTransition.CENTER);
-        jfxDialogLayout.setHeading(new Text("Add Edge\n"));
+
+        Text text = new Text("Add Edge\n");
+        text.getStyleClass().add("fancyText");
+        jfxDialogLayout.setHeading(text);
 
         JFXTextField srcNodeTf = createTextField("Source");
+        srcNodeTf.getStyleClass().add("dialog-textField");
         JFXTextField destNodeTf = createTextField("Destination");
+        destNodeTf.getStyleClass().add("dialog-textField");
         JFXTextField gainTf = createTextField("Gain");
+        gainTf.getStyleClass().add("dialog-textField");
 
         VBox vbox = new VBox();
         vbox.setSpacing(15d);
@@ -73,6 +81,8 @@ public class ViewController {
         jfxDialogLayout.setBody(vbox);
 
         JFXButton addButton = new JFXButton("Add");
+        addButton.setRipplerFill(Paint.valueOf("#e0f2f1"));
+        addButton.getStyleClass().add("dialog-button");
         addButton.setDisable(true);
         addButton.setDefaultButton(true);
         addButton.setOnAction(e -> {
@@ -82,9 +92,17 @@ public class ViewController {
         });
 
         JFXButton cancelButton = new JFXButton("Cancel");
+        cancelButton.setRipplerFill(Paint.valueOf("#4286f4"));
+        cancelButton.getStyleClass().add("dialog-cancel-button");
         cancelButton.setOnAction(e -> jfxDialog.close());
 
-        jfxDialogLayout.setActions(addButton, cancelButton);
+        HBox hbox = new HBox();
+        hbox.setSpacing(15d);
+        hbox.getChildren().add(addButton);
+        hbox.getChildren().add(cancelButton);
+        jfxDialogLayout.setActions(hbox);
+
+        jfxDialogLayout.setActions(hbox);
 
         srcNodeTf.textProperty().addListener((observable, oldValue, newValue) -> {
             if (isValidEdge(newValue, destNodeTf.getText(), gainTf.getText()))
@@ -126,12 +144,18 @@ public class ViewController {
         JFXDialogLayout jfxDialogLayout = new JFXDialogLayout();
         JFXDialog jfxDialog = new JFXDialog(this.dialogParent, jfxDialogLayout,
                 JFXDialog.DialogTransition.CENTER);
-        jfxDialogLayout.setHeading(new Text("Add Node\n"));
+
+        Text text = new Text("Add Node\n");
+        text.getStyleClass().add("fancyText");
+        jfxDialogLayout.setHeading(text);
 
         JFXTextField labelTf = createTextField("Label");
+        labelTf.getStyleClass().add("dialog-textField");
         jfxDialogLayout.setBody(labelTf);
 
         JFXButton addButton = new JFXButton("Add");
+        addButton.setRipplerFill(Paint.valueOf("#e0f2f1"));
+        addButton.getStyleClass().add("dialog-button");
         addButton.setDisable(true);
         addButton.setDefaultButton(true);
         addButton.setOnAction(e -> {
@@ -140,9 +164,15 @@ public class ViewController {
         });
 
         JFXButton cancelButton = new JFXButton("Cancel");
+        cancelButton.setRipplerFill(Paint.valueOf("#4286f4"));
+        cancelButton.getStyleClass().add("dialog-cancel-button");
         cancelButton.setOnAction(e -> jfxDialog.close());
 
-        jfxDialogLayout.setActions(addButton, cancelButton);
+        HBox hbox = new HBox();
+        hbox.setSpacing(15d);
+        hbox.getChildren().add(addButton);
+        hbox.getChildren().add(cancelButton);
+        jfxDialogLayout.setActions(hbox);
 
         labelTf.textProperty().addListener((ObservableValue<?
                 extends String> observable, String oldValue, String newValue) -> {
@@ -174,10 +204,15 @@ public class ViewController {
         JFXDialogLayout jfxDialogLayout = new JFXDialogLayout();
         JFXDialog jfxDialog = new JFXDialog(this.dialogParent, jfxDialogLayout,
                 JFXDialog.DialogTransition.CENTER);
-        jfxDialogLayout.setHeading(new Text("Solve\n"));
+
+        Text text = new Text("Solve\n");
+        text.getStyleClass().add("fancyText");
+        jfxDialogLayout.setHeading(text);
 
         JFXTextField startTF = createTextField("Start");
+        startTF.getStyleClass().add("dialog-textField");
         JFXTextField endTF = createTextField("End");
+        endTF.getStyleClass().add("dialog-textField");
 
         VBox vbox = new VBox();
         vbox.setSpacing(15d);
@@ -186,6 +221,8 @@ public class ViewController {
         jfxDialogLayout.setBody(vbox);
 
         JFXButton addButton = new JFXButton("Solve");
+        addButton.setRipplerFill(Paint.valueOf("#e0f2f1"));
+        addButton.getStyleClass().add("dialog-button");
         addButton.setDisable(true);
         addButton.setDefaultButton(true);
         addButton.setOnAction(e -> {
@@ -194,19 +231,25 @@ public class ViewController {
         });
 
         JFXButton cancelButton = new JFXButton("Cancel");
+        cancelButton.setRipplerFill(Paint.valueOf("#4286f4"));
+        cancelButton.getStyleClass().add("dialog-cancel-button");
         cancelButton.setOnAction(e -> jfxDialog.close());
 
-        jfxDialogLayout.setActions(addButton, cancelButton);
+        HBox hbox = new HBox();
+        hbox.setSpacing(15d);
+        hbox.getChildren().add(addButton);
+        hbox.getChildren().add(cancelButton);
+        jfxDialogLayout.setActions(hbox);
 
         startTF.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isValidLabel(newValue) && nodeExists(newValue))
+            if (this.isValidLabel(newValue) && this.nodeExists(newValue) && this.isValidLabel(endTF.getText()) && this.nodeExists(endTF.getText()))
                 addButton.setDisable(false);
             else
                 addButton.setDisable(true);
         });
 
         endTF.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isValidLabel(newValue) && nodeExists(newValue))
+            if (this.isValidLabel(newValue) && this.nodeExists(newValue) && this.isValidLabel(startTF.getText()) && this.nodeExists(startTF.getText()))
                 addButton.setDisable(false);
             else
                 addButton.setDisable(true);
