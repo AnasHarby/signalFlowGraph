@@ -66,7 +66,8 @@ public class Sfg {
         this.forwardPathsDeltas = getForwardPathsDeltas(this.forwardPaths, this.delta);
         double res = getResult(this.delta, this.forwardPathsDeltas,
                 this.forwardPaths);
-        return new SfgMetadata(res, this.forwardPaths, this.loops);
+        return new SfgMetadata(res, this.forwardPaths, this.loops, this.delta,
+                this.forwardPathsDeltas);
     }
 
     private List<Path> getForwardPaths(final Node start, final Node end,
@@ -84,7 +85,7 @@ public class Sfg {
         visited.put(curr, true);
         nodeStack.push(curr);
         for (Edge edge : adj.get(curr)) {
-            if (edge.dest.equals(end)) {
+            if (edge.getDest().equals(end)) {
                 Path path = new Path();
                 //Creates a new path, adds the last node and edge to it.
                 path.addNodes(nodeStack.toArray(new Node[nodeStack.size()]));
@@ -93,10 +94,10 @@ public class Sfg {
                 path.addEdges(edge);
                 //Adds the new path to the forward paths.
                 ret.add(path);
-            } else if (!visited.containsKey(edge.dest) ||
-                    !visited.get(edge.dest)) {
+            } else if (!visited.containsKey(edge.getDest()) ||
+                    !visited.get(edge.getDest())) {
                 edgeStack.push(edge);
-                getForwardPathsUtil(edge.dest, end, nodeStack, edgeStack,
+                getForwardPathsUtil(edge.getDest(), end, nodeStack, edgeStack,
                         visited, ret, adj);
             }
         }
@@ -109,11 +110,11 @@ public class Sfg {
 
     private List<Path> getLoops(final List<Node> nodeList,
                                 final Map<Node, List<Edge>> adj) {
-        List<Path> loops = new ArrayList<>();
+        Set<Path> loopSet = new HashSet<>();
         for (Node node : nodeList)
-            loops.addAll(getLoopsUtil(node, node, new Stack<>(), new Stack<>(),
-                    new HashMap<>(), new ArrayList<>(), loops, adj));
-        return loops;
+            loopSet.addAll(getLoopsUtil(node, node, new Stack<>(), new Stack<>(),
+                    new HashMap<>(), new ArrayList<>(), loopSet, adj));
+        return new ArrayList<>(loopSet);
     }
 
     private List<Path> getLoopsUtil(final Node curr, final Node dest,
@@ -121,13 +122,13 @@ public class Sfg {
                                     final Stack<Edge> edgeStack,
                                     final Map<Node, Boolean> visited,
                                     final List<Path> ret,
-                                    final List<Path> checkedLoops,
+                                    final Set<Path> checkedLoops,
                                     final Map<Node, List<Edge>> adj) {
         if (visited.containsKey(curr) && curr.equals(dest)) {
             Path loop = new Path();
             loop.addNodes(nodeStack.toArray(new Node[nodeStack.size()]));
             loop.addEdges(edgeStack.toArray(new Edge[edgeStack.size()]));
-            if (!isDuplicateLoop(loop, checkedLoops))
+            if (!checkedLoops.contains(loop))
                 ret.add(loop);
         }
         for (Edge edge : adj.get(curr))
@@ -142,13 +143,6 @@ public class Sfg {
                 edgeStack.pop();
             }
         return ret;
-    }
-
-    private boolean isDuplicateLoop(final Path loop, List<Path> loops) {
-        for (Path checkedLoop : loops)
-            if (loop.equals(checkedLoop))
-                return true;
-        return false;
     }
 
     private Delta getDelta(final List<Path> loops) {
@@ -236,7 +230,7 @@ public class Sfg {
         }
 
         @Override
-        protected final Object clone() throws CloneNotSupportedException {
+        protected final Object clone() {
             return new Node(this.label);
         }
     }
@@ -286,7 +280,7 @@ public class Sfg {
         }
 
         @Override
-        protected Object clone() throws CloneNotSupportedException {
+        protected Object clone() {
             return new Edge((Node) this.src.clone(), (Node) this.dest.clone()
                     , this.gain);
         }
@@ -364,7 +358,7 @@ public class Sfg {
         }
 
         @Override
-        protected Object clone() throws CloneNotSupportedException {
+        protected Object clone() {
             Path clone = new Path();
             for (Node node : this.nodeList)
                 clone.addNodes((Node) node.clone());
@@ -448,6 +442,14 @@ public class Sfg {
         public int getDegree() {
             return degree;
         }
+
+        @Override
+        protected Object clone() {
+            LoopGroupContainer clone = new LoopGroupContainer(this.degree);
+            for (LoopGroup loopGroup : this.groupList)
+                clone.addLoopGroups((LoopGroup) loopGroup.clone());
+            return clone;
+        }
     }
 
     public static class Delta {
@@ -473,6 +475,14 @@ public class Sfg {
         public double getGain() {
             return this.gain;
         }
+
+        @Override
+        protected Object clone() {
+            Delta clone = new Delta();
+            for (LoopGroupContainer container : this.containerList)
+                clone.addContainers((LoopGroupContainer) container.clone());
+            return clone;
+        }
     }
 
     /**
@@ -486,12 +496,17 @@ public class Sfg {
         private double result = 0;
         private List<Path> forwardPaths = null;
         private List<Path> loops = null;
+        private Delta delta = null;
+        private Map<Path, Delta> forwardPathsDeltas = null;
 
         public SfgMetadata(final double result, final List<Path> forwardPaths
-                , final List<Path> loops) {
+                , final List<Path> loops, final Delta delta, final Map<Path
+                , Delta> forwardPathsDeltas) {
             this.result = result;
             this.forwardPaths = clonePaths(forwardPaths);
-            this.loops = loops;
+            this.loops = clonePaths(loops);
+            this.delta = (Delta) delta.clone();
+            this.forwardPathsDeltas = cloneDeltas(forwardPathsDeltas);
         }
 
         public double getResult() {
@@ -506,14 +521,26 @@ public class Sfg {
             return this.loops;
         }
 
+        public Delta getDelta() {
+            return delta;
+        }
+
+        public Map<Path, Delta> getForwardPathsDeltas() {
+            return forwardPathsDeltas;
+        }
+
         private List<Path> clonePaths(final List<Path> pathList) {
             List<Path> clone = new ArrayList<>();
-            try {
-                for (Path path : pathList)
-                    clone.add((Path) path.clone());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();;
-            }
+            for (Path path : pathList)
+                clone.add((Path) path.clone());
+            return clone;
+        }
+
+        private Map<Path, Delta> cloneDeltas(final Map<Path, Delta> deltaMap) {
+            Map<Path, Delta> clone = new HashMap<>();
+            for (Map.Entry<Path, Delta> entry : deltaMap.entrySet())
+                clone.put((Path) entry.getKey().clone(),
+                        (Delta) entry.getValue().clone());
             return clone;
         }
     }

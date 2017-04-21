@@ -4,9 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import sfg.Sfg;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Tester {
 
@@ -15,7 +13,7 @@ public class Tester {
         int testSize = 1000;
         List<Sfg.Node> nodes = new ArrayList<>();
         List<Sfg.Edge> edges = new ArrayList<>();
-        List<Sfg.Path> paths = new ArrayList<>();
+        Set<Sfg.Path> paths = new HashSet<>();
         for (int i = 0; i < testSize; i++)
             nodes.add(new Sfg.Node("N" + i));
         for (int i = 1; i < testSize; i++)
@@ -28,15 +26,13 @@ public class Tester {
             path.addEdges(edges.toArray(new Sfg.Edge[edges.size()]));
             paths.add(path);
         }
-        for (int i = 0; i < testSize; i++)
-            for (int j = i + 1; j < testSize; j++)
-                Assert.assertTrue(paths.get(i).equals(paths.get(j)));
+        Assert.assertTrue(paths.size() == 1);
         edges.add(new Sfg.Edge(nodes.get(5), nodes.get(1), 5));
         Sfg.Path unequalPath = new Sfg.Path();
         unequalPath.addNodes(nodes.toArray(new Sfg.Node[nodes.size()]));
         unequalPath.addEdges(edges.toArray(new Sfg.Edge[edges.size()]));
-        for (int i = 0; i < testSize; i++)
-            Assert.assertFalse(paths.get(i).equals(unequalPath));
+        paths.add(unequalPath);
+        Assert.assertTrue(paths.size() == 2);
     }
 
     @Test
@@ -60,18 +56,17 @@ public class Tester {
     @Test
     public void testLoops() {
         Sfg sfg = new Sfg();
+        int testSize = 100;
         List<Sfg.Node> nodes = new ArrayList<>();
-        for (int i = 0; i < 8; i++)
-            nodes.add(new Sfg.Node("n" + i));
+        for (int i = 0; i < testSize; i++)
+            nodes.add(new Sfg.Node("N" + i));
         sfg.addNodes(nodes.toArray(new Sfg.Node[nodes.size()]));
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < testSize - 1; i++)
             sfg.addEdges(new Sfg.Edge(nodes.get(i), nodes.get(i + 1), 5));
-        sfg.addEdges(new Sfg.Edge(nodes.get(7), nodes.get(1), 5),
-                new Sfg.Edge(nodes.get(2), nodes.get(1), 5),
-                new Sfg.Edge(nodes.get(4), nodes.get(3), 5),
-                new Sfg.Edge(nodes.get(7), nodes.get(6), 5));
-        Sfg.SfgMetadata metadata = sfg.solve(nodes.get(0), nodes.get(5));
-        Assert.assertTrue(metadata.getLoops().size() == 4);
+        for (int i = 1; i < testSize; i++)
+            sfg.addEdges(new Sfg.Edge(nodes.get(i), nodes.get(0), 5));
+        Sfg.SfgMetadata metadata = sfg.solve(nodes.get(0), nodes.get(testSize - 1));
+        Assert.assertTrue(metadata.getLoops().size() == testSize - 1);
     }
 
     @Test
