@@ -300,7 +300,7 @@ public class Sfg {
         private List<Edge> edgeList = null;
         private List<Node> nodeList = null;
         private double gain = 1;
-
+        private long totEdgesHashCodes = 0;
         /**
          * Creates a new empty path.
          */
@@ -315,8 +315,10 @@ public class Sfg {
          */
         public void addEdges(final Edge... edges) {
             this.edgeList.addAll(Arrays.asList(edges));
-            for (Edge edge : edges)
+            for (Edge edge : edges) {
                 this.gain *= edge.getGain();
+                this.totEdgesHashCodes += edge.hashCode();
+            }
         }
 
         /**
@@ -351,9 +353,7 @@ public class Sfg {
 
         @Override
         public int hashCode() {
-            long hash = 0;
-            for (Edge edge : this.edgeList)
-                hash += edge.hashCode();
+            long hash = this.totEdgesHashCodes;
             hash ^= (hash >>> 20) ^ (hash >>> 12);
             return (int) hash % 10000007;
         }
