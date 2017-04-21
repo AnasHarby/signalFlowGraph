@@ -228,11 +228,6 @@ public class Sfg {
         public String getLabel() {
             return label;
         }
-
-        @Override
-        protected final Object clone() {
-            return new Node(this.label);
-        }
     }
 
     /**
@@ -277,12 +272,6 @@ public class Sfg {
          */
         public double getGain() {
             return gain;
-        }
-
-        @Override
-        protected Object clone() {
-            return new Edge((Node) this.src.clone(), (Node) this.dest.clone()
-                    , this.gain);
         }
     }
 
@@ -345,6 +334,14 @@ public class Sfg {
             return this.gain;
         }
 
+        public List<Node> getNodeList() {
+            return nodeList;
+        }
+
+        public List<Edge> getEdgeList() {
+            return edgeList;
+        }
+
         @Override
         public int hashCode() {
             long hash = this.totEdgesHashCodes;
@@ -360,10 +357,8 @@ public class Sfg {
         @Override
         protected Object clone() {
             Path clone = new Path();
-            for (Node node : this.nodeList)
-                clone.addNodes((Node) node.clone());
-            for (Edge edge : this.edgeList)
-                clone.addEdges((Edge) edge.clone());
+            clone.addNodes(this.nodeList.toArray(new Node[this.nodeList.size()]));
+            clone.addEdges(this.edgeList.toArray(new Edge[this.edgeList.size()]));
             return clone;
         }
     }
@@ -378,6 +373,10 @@ public class Sfg {
 
         public double getGain() {
             return this.gain;
+        }
+
+        public List<Path> getLoopList() {
+            return this.loopList;
         }
 
         public void addLoops(final Path... loops) {

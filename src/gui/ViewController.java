@@ -22,6 +22,7 @@ import org.graphstream.ui.view.Viewer;
 import sfg.Sfg;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -275,12 +276,58 @@ public class ViewController {
     private void solveGraphUtil(final String start, final String end) {
         Sfg.SfgMetadata metadata = this.sfg.solve(
                 this.sfg.getNode(start), this.sfg.getNode(end));
-        metadata.getForwardPaths().get(0).addNodes(new Sfg.Node("S"));
-        logger.appendText("Result = " + metadata.getResult() + "\n");
+        this.logger.appendText(printForwardPaths(metadata.getForwardPaths()));
+        this.logger.appendText("----------------------------\n");
+        this.logger.appendText(printLoops(metadata.getLoops()));
+        this.logger.appendText("----------------------------\n");
+        this.logger.appendText(printNonTouchingCombinations(metadata.getDelta(),
+                metadata.getLoops()));
+        this.logger.appendText("----------------------------\n");
+        this.logger.appendText("Result = " + metadata.getResult() + "\n");
+    }
+
+    private String printForwardPaths(final List<Sfg.Path> forwardPaths) {
+        StringBuilder log = new StringBuilder();
+        for (int i = 0; i < forwardPaths.size(); i++) {
+            log.append("Path\t" + (i + 1) + ": ");
+            for (Sfg.Node node : forwardPaths.get(i).getNodeList())
+                log.append(node.getLabel() + " ");
+            log.append("\n");
+        }
+        return log.toString();
+    }
+
+    private String printLoops(final List<Sfg.Path> loops) {
+        StringBuilder log = new StringBuilder();
+        for (int i = 0; i < loops.size(); i++) {
+            log.append("Loop\t" + (i + 1) + ": ");
+            for (Sfg.Node node : loops.get(i).getNodeList())
+                log.append(node.getLabel() + " ");
+            log.append("\n");
+        }
+        return log.toString();
+    }
+
+    private String printNonTouchingCombinations(final Sfg.Delta delta,
+                                                final List<Sfg.Path> loops) {
+        StringBuilder log = new StringBuilder();
+        for (int k = 0; k < delta.getContainerList().size(); k++) {
+            Sfg.LoopGroupContainer container = delta.getContainerList().get(k);
+            log.append("Non touching loops of size " + (k + 1) + ": \n");
+            for (Sfg.LoopGroup loopGroup : container.getGroupList()) {
+                log.append("(");
+                for (Sfg.Path loop : loopGroup.getLoopList()) {
+                    log.append("L" + (loops.indexOf(loop) + 1) + " ");
+                }
+                log.deleteCharAt(log.length() - 1);
+                log.append(")");
+            }
+            log.append("\n");
+        }
+        return log.toString();
     }
 
     @FXML
-        // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert canvas != null;
         assert logger != null;
