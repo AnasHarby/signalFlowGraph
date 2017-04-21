@@ -18,12 +18,17 @@ public class Sfg {
      * Creates a new empty Sfg.
      */
     public Sfg() {
+        this.forwardPaths = new ArrayList<>();
+        this.loops = new ArrayList<>();
         this.adj = new HashMap<>();
         this.nodeMap = new HashMap<>();
+        this.delta = new Delta();
+        this.forwardPathsDeltas = new HashMap<>();
     }
 
     /**
      * Adds nodes to the SFG.
+     *
      * @param nodes nodes to be added.
      */
     public void addNodes(final Node... nodes) {
@@ -35,6 +40,7 @@ public class Sfg {
 
     /**
      * Adds edges to the SFG.
+     *
      * @param edges edges to be added.
      */
     public void addEdges(final Edge... edges) {
@@ -43,8 +49,21 @@ public class Sfg {
     }
 
     /**
+     * Clears the SFG.
+     */
+    public void clear() {
+        this.forwardPaths.clear();
+        this.loops.clear();
+        this.adj.clear();
+        this.nodeMap.clear();
+        this.delta.clear();
+        this.forwardPathsDeltas.clear();
+    }
+
+    /**
      * Gets a node from the SFG by its label, changing a node's label is not
      * allowed.
+     *
      * @param label label of the node to be returned.
      * @return {@link Node} with the equivalent label.
      */
@@ -54,8 +73,9 @@ public class Sfg {
 
     /**
      * Solves the SFG and returns the result enclosed in {@link SfgMetadata}.
+     *
      * @param start Starting node for the signal.
-     * @param end Ending node for the signal.
+     * @param end   Ending node for the signal.
      * @return {@link SfgMetadata} object which has the gain result and a copy
      * of forward paths and loops for this signal.
      */
@@ -214,8 +234,9 @@ public class Sfg {
 
         /**
          * Creates a new node.
+         *
          * @param label label for this node, this is used later in SFG as an
-         * identifier.
+         *              identifier.
          */
         public Node(final String label) {
             this.label = label;
@@ -223,6 +244,7 @@ public class Sfg {
 
         /**
          * Gets label for this node.
+         *
          * @return node label.
          */
         public String getLabel() {
@@ -240,7 +262,8 @@ public class Sfg {
 
         /**
          * Creates a new edge.
-         * @param src Source node.
+         *
+         * @param src  Source node.
          * @param dest Destination node.
          * @param gain gain of the edge.
          */
@@ -252,6 +275,7 @@ public class Sfg {
 
         /**
          * Gets the edge's source node.
+         *
          * @return source node.
          */
         public Node getSrc() {
@@ -260,6 +284,7 @@ public class Sfg {
 
         /**
          * Gets the edge's destination node.
+         *
          * @return destination node.
          */
         public Node getDest() {
@@ -268,6 +293,7 @@ public class Sfg {
 
         /**
          * Gets gain of the edge.
+         *
          * @return gain.
          */
         public double getGain() {
@@ -284,6 +310,7 @@ public class Sfg {
         private List<Node> nodeList = null;
         private double gain = 1;
         private long totEdgesHashCodes = 0;
+
         /**
          * Creates a new empty path.
          */
@@ -294,6 +321,7 @@ public class Sfg {
 
         /**
          * Adds edges to the path.
+         *
          * @param edges edges to be added.
          */
         public void addEdges(final Edge... edges) {
@@ -306,6 +334,7 @@ public class Sfg {
 
         /**
          * Adds nodes to the path.
+         *
          * @param nodes nodes to be added.
          */
         public void addNodes(final Node... nodes) {
@@ -315,6 +344,7 @@ public class Sfg {
         /**
          * Checks if this path touches another path (intersect in a
          * node/edge or more).
+         *
          * @param path path to be checked for touching.
          * @return true if they touch, false if not.
          */
@@ -328,6 +358,7 @@ public class Sfg {
 
         /**
          * Gets overall gain of the path.
+         *
          * @return gain.
          */
         public double getGain() {
@@ -453,10 +484,16 @@ public class Sfg {
 
     public static class Delta {
         private List<LoopGroupContainer> containerList = null;
-        private double gain = 1;
+        private double gain;
 
         public Delta() {
             containerList = new ArrayList<>();
+            this.gain = 1;
+        }
+
+        public void clear() {
+            this.containerList.clear();
+            this.gain = 1;
         }
 
         public void addContainers(final LoopGroupContainer... containers) {

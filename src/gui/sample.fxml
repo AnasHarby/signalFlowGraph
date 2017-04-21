@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.ScrollPane?>
@@ -28,19 +26,20 @@
                         <HBox layoutX="950.0" layoutY="123.0" prefHeight="100.0" prefWidth="200.0"
                               AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
-                                <Separator orientation="VERTICAL" prefHeight="200.0"
-                                           styleClass="separator"/>
+                                <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="separator"/>
                                 <VBox prefWidth="175.0" spacing="30.0" HBox.hgrow="ALWAYS">
                                     <children>
                                         <JFXButton buttonType="RAISED" minWidth="75.0" onAction="#addNode"
-                                                   ripplerFill="#e0f2f1" styleClass="regular-button"
-                                                   text="Node"/>
+                                                   ripplerFill="#e0f2f1" styleClass="regular-button" text="Node"/>
                                         <JFXButton buttonType="RAISED" layoutX="60.0" layoutY="60.0" minWidth="75.0"
-                                                   onAction="#addEdge" ripplerFill="#e0f2f1"
-                                                   styleClass="regular-button" text="Edge"/>
+                                                   onAction="#addEdge" ripplerFill="#e0f2f1" styleClass="regular-button"
+                                                   text="Edge"/>
                                         <JFXButton buttonType="RAISED" layoutX="60.0" layoutY="130.0" minWidth="75.0"
                                                    onAction="#solveGraph" ripplerFill="#e0f2f1"
                                                    styleClass="regular-button" text="Solve"/>
+                                        <JFXButton buttonType="RAISED" layoutX="70.0" layoutY="202.0" minWidth="75.0"
+                                                   onAction="#clearGraph" ripplerFill="#e0f2f1"
+                                                   styleClass="regular-button" text="Clear"/>
                                     </children>
                                     <padding>
                                         <Insets bottom="60.0" left="60.0" right="60.0" top="60.0"/>

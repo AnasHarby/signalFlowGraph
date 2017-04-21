@@ -145,6 +145,16 @@ public class ViewController {
     }
 
     @FXML
+    void clearGraph(final ActionEvent event) {
+        this.graph.getNodeSet().clear();
+        this.sfg.clear();
+        this.graph.addAttribute("ui.stylesheet", "url('" + this
+                .getClass().getClassLoader().getResource("gui/graph.css") + "')");
+        this.graph.addAttribute("ui.quality");
+        this.graph.addAttribute("ui.antialias");
+    }
+
+    @FXML
     void addNode(final ActionEvent event) {
         JFXDialogLayout jfxDialogLayout = new JFXDialogLayout();
         JFXDialog jfxDialog = new JFXDialog(this.dialogParent, jfxDialogLayout,
