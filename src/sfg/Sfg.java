@@ -351,11 +351,11 @@ public class Sfg {
 
         @Override
         public int hashCode() {
-            int hash = 0;
+            long hash = 0;
             for (Edge edge : this.edgeList)
-                hash = (hash + edge.hashCode()) % 10000007;
+                hash += edge.hashCode();
             hash ^= (hash >>> 20) ^ (hash >>> 12);
-            return hash;
+            return (int) hash % 10000007;
         }
 
         @Override

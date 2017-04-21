@@ -12,7 +12,7 @@ public class Tester {
 
     @Test
     public void testPathEquality() {
-        int testSize = 60;
+        int testSize = 500;
         List<Sfg.Node> nodes = new ArrayList<>();
         List<Sfg.Edge> edges = new ArrayList<>();
         List<Sfg.Path> paths = new ArrayList<>();
