@@ -52,9 +52,12 @@ public class ViewController {
     private Sfg sfg;
 
     public ViewController() {
-        this.graph = new SingleGraph("SFG");
         this.sfg = new Sfg();
-        this.graph.addAttribute("ui.stylesheet", "url('" + this.getClass().getClassLoader().getResource("gui/graph.css") + "')");
+        this.graph = new SingleGraph("SFG");
+        this.graph.addAttribute("ui.stylesheet", "url('" + this
+                .getClass().getClassLoader().getResource("gui/graph.css") + "')");
+        this.graph.addAttribute("ui.quality");
+        this.graph.addAttribute("ui.antialias");
     }
 
     @FXML
@@ -103,8 +106,6 @@ public class ViewController {
         hbox.getChildren().add(cancelButton);
         jfxDialogLayout.setActions(hbox);
 
-        jfxDialogLayout.setActions(hbox);
-
         srcNodeTf.textProperty().addListener((observable, oldValue, newValue) -> {
             if (isValidEdge(newValue, destNodeTf.getText(), gainTf.getText()))
                 addButton.setDisable(false);
@@ -138,7 +139,8 @@ public class ViewController {
     private void addEdgeUtil(final String src, final String dest, double gain) {
         Edge edge = this.graph.addEdge(src + dest, src, dest, true);
         edge.addAttribute("ui.label", Double.toString(gain));
-        this.sfg.addEdge(src, dest, gain);
+        this.sfg.addEdges(new Sfg.Edge(this.sfg.getNode(src),
+                this.sfg.getNode(dest), gain));
     }
 
     @FXML
@@ -229,6 +231,7 @@ public class ViewController {
         addButton.setDefaultButton(true);
         addButton.setOnAction(e -> {
             //TODO Solve Graph
+            solveGraphUtil(startTF.getText(), endTF.getText());
             jfxDialog.close();
         });
 
@@ -264,6 +267,11 @@ public class ViewController {
 
         jfxDialog.setOnDialogOpened(e -> startTF.requestFocus());
         jfxDialog.show();
+    }
+
+    private void solveGraphUtil(final String start, final String end) {
+        double res = this.sfg.solve(this.sfg.getNode(start), this.sfg.getNode(end));
+        logger.appendText("Result = " + res + "\n");
     }
 
     @FXML

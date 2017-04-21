@@ -16,24 +16,15 @@ public class Sfg {
     }
 
     public void addNodes(final Node... nodes) {
-        for (Node node : nodes)
+        for (Node node : nodes) {
             this.nodeMap.put(node.getLabel(), node);
-    }
-
-    public void addEdges(final Edge... edges) {
-        for (Edge edge : edges) {
-            if (!this.adj.containsKey(edge.src))
-                this.adj.put(edge.getSrc(), new ArrayList<>());
-            this.adj.get(edge.getSrc()).add(edge);
+            this.adj.put(node, new ArrayList<>());
         }
     }
 
-    public void addEdge(final String src, final String dest, double gain) {
-        Node srcNode = this.nodeMap.get(src);
-        Node destNode = this.nodeMap.get(dest);
-        if (!this.adj.containsKey(srcNode))
-            this.adj.put(srcNode, new ArrayList<>());
-        this.adj.get(srcNode).add(new Edge(srcNode, destNode, gain));
+    public void addEdges(final Edge... edges) {
+        for (Edge edge : edges)
+            this.adj.get(edge.getSrc()).add(edge);
     }
 
     public Node getNode(final String label) {
