@@ -5,28 +5,38 @@ import org.junit.Test;
 import sfg.Sfg;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Tester {
 
     @Test
     public void testPathEquality() {
-        Sfg.Path a = new Sfg.Path();
-        Sfg.Path b = new Sfg.Path();
-        Sfg.Node n1 = new Sfg.Node("n1");
-        Sfg.Node n2 = new Sfg.Node("n2");
-        Sfg.Node n3 = new Sfg.Node("n3");
-        Sfg.Node n4 = new Sfg.Node("n4");
-        Sfg.Node n5 = new Sfg.Node("n5");
-        Sfg.Edge e1 = new Sfg.Edge(n1, n2, 1);
-        Sfg.Edge e2 = new Sfg.Edge(n2, n3, 2);
-        Sfg.Edge e3 = new Sfg.Edge(n3, n4, 3);
-        Sfg.Edge e4 = new Sfg.Edge(n4, n5, 4);
-        a.addEdges(e1, e2, e3, e4);
-        b.addEdges(e2, e3, e4, e1);
-        Assert.assertTrue(a.equals(b));
-        b.addEdges(e4, e1);
-        Assert.assertFalse(a.equals(b));
+        int testSize = 60;
+        List<Sfg.Node> nodes = new ArrayList<>();
+        List<Sfg.Edge> edges = new ArrayList<>();
+        List<Sfg.Path> paths = new ArrayList<>();
+        for (int i = 0; i < testSize; i++)
+            nodes.add(new Sfg.Node("N" + i));
+        for (int i = 1; i < testSize; i++)
+            edges.add(new Sfg.Edge(nodes.get(i - 1), nodes.get(i), 5));
+        for (int i = 0; i < testSize; i++) {
+            Collections.shuffle(nodes);
+            Collections.shuffle(edges);
+            Sfg.Path path = new Sfg.Path();
+            path.addNodes(nodes.toArray(new Sfg.Node[nodes.size()]));
+            path.addEdges(edges.toArray(new Sfg.Edge[edges.size()]));
+            paths.add(path);
+        }
+        for (int i = 0; i < testSize; i++)
+            for (int j = i + 1; j < testSize; j++)
+                Assert.assertTrue(paths.get(i).equals(paths.get(j)));
+        edges.add(new Sfg.Edge(nodes.get(5), nodes.get(1), 5));
+        Sfg.Path unequalPath = new Sfg.Path();
+        unequalPath.addNodes(nodes.toArray(new Sfg.Node[nodes.size()]));
+        unequalPath.addEdges(edges.toArray(new Sfg.Edge[edges.size()]));
+        for (int i = 0; i < testSize; i++)
+            Assert.assertFalse(paths.get(i).equals(unequalPath));
     }
 
     @Test

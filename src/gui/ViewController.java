@@ -246,14 +246,18 @@ public class ViewController {
         jfxDialogLayout.setActions(hbox);
 
         startTF.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (this.isValidLabel(newValue) && this.nodeExists(newValue) && this.isValidLabel(endTF.getText()) && this.nodeExists(endTF.getText()))
+            if (this.isValidLabel(newValue) && this.nodeExists(newValue) &&
+                    this.isValidLabel(endTF.getText()) &&
+                    this.nodeExists(endTF.getText()))
                 addButton.setDisable(false);
             else
                 addButton.setDisable(true);
         });
 
         endTF.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (this.isValidLabel(newValue) && this.nodeExists(newValue) && this.isValidLabel(startTF.getText()) && this.nodeExists(startTF.getText()))
+            if (this.isValidLabel(newValue) && this.nodeExists(newValue) &&
+                    this.isValidLabel(startTF.getText()) &&
+                    this.nodeExists(startTF.getText()))
                 addButton.setDisable(false);
             else
                 addButton.setDisable(true);
@@ -288,7 +292,8 @@ public class ViewController {
 
     private void initCanvas() {
         //A must-set property to apply css tp the graph.
-        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+        System.setProperty("org.graphstream.ui.renderer",
+                "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         ViewPanel view = viewer.addDefaultView(false);
         viewer.enableAutoLayout();

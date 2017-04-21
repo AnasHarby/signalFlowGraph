@@ -2,6 +2,10 @@ package sfg;
 
 import java.util.*;
 
+/**
+ * A representation for the structure of SFG and its services, allowing to solve
+ * signal flow representations of physical systems using Mason's algorithm.
+ */
 public class Sfg {
     private List<Path> forwardPaths = null;
     private List<Path> loops = null;
@@ -10,11 +14,18 @@ public class Sfg {
     private Delta delta = null;
     private Map<Path, Delta> forwardPathsDeltas = null;
 
+    /**
+     * Creates a new empty Sfg.
+     */
     public Sfg() {
         this.adj = new HashMap<>();
         this.nodeMap = new HashMap<>();
     }
 
+    /**
+     * Adds nodes to the SFG.
+     * @param nodes nodes to be added.
+     */
     public void addNodes(final Node... nodes) {
         for (Node node : nodes) {
             this.nodeMap.put(node.getLabel(), node);
@@ -22,15 +33,32 @@ public class Sfg {
         }
     }
 
+    /**
+     * Adds edges to the SFG.
+     * @param edges edges to be added.
+     */
     public void addEdges(final Edge... edges) {
         for (Edge edge : edges)
             this.adj.get(edge.getSrc()).add(edge);
     }
 
+    /**
+     * Gets a node from the SFG by its label, changing a node's label is not
+     * allowed.
+     * @param label label of the node to be returned.
+     * @return {@link Node} with the equivalent label.
+     */
     public Node getNode(final String label) {
         return this.nodeMap.get(label);
     }
 
+    /**
+     * Solves the SFG and returns the result enclosed in {@link SfgMetadata}.
+     * @param start Starting node for the signal.
+     * @param end Ending node for the signal.
+     * @return {@link SfgMetadata} object which has the gain result and a copy
+     * of forward paths and loops for this signal.
+     */
     public SfgMetadata solve(final Node start, final Node end) {
         this.forwardPaths = getForwardPaths(start, end, this.adj);
         this.loops = getLoops(new ArrayList<>(this.nodeMap.values()), this.adj);
@@ -190,16 +218,25 @@ public class Sfg {
     public static class Node {
         private String label = null;
 
+        /**
+         * Creates a new node.
+         * @param label label for this node, this is used later in SFG as an
+         * identifier.
+         */
         public Node(final String label) {
             this.label = label;
         }
 
+        /**
+         * Gets label for this node.
+         * @return node label.
+         */
         public String getLabel() {
             return label;
         }
 
         @Override
-        protected Object clone() throws CloneNotSupportedException {
+        protected final Object clone() throws CloneNotSupportedException {
             return new Node(this.label);
         }
     }
@@ -212,20 +249,38 @@ public class Sfg {
         private Node dest = null;
         private double gain = 0.0;
 
+        /**
+         * Creates a new edge.
+         * @param src Source node.
+         * @param dest Destination node.
+         * @param gain gain of the edge.
+         */
         public Edge(final Node src, final Node dest, final double gain) {
             this.src = src;
             this.dest = dest;
             this.gain = gain;
         }
 
+        /**
+         * Gets the edge's source node.
+         * @return source node.
+         */
         public Node getSrc() {
             return src;
         }
 
+        /**
+         * Gets the edge's destination node.
+         * @return destination node.
+         */
         public Node getDest() {
             return dest;
         }
 
+        /**
+         * Gets gain of the edge.
+         * @return gain.
+         */
         public double getGain() {
             return gain;
         }
@@ -237,26 +292,47 @@ public class Sfg {
         }
     }
 
+    /**
+     * A representation of a path of nodes/edges inside a SFG.
+     */
+
     public static class Path {
         private List<Edge> edgeList = null;
         private List<Node> nodeList = null;
         private double gain = 1;
 
+        /**
+         * Creates a new empty path.
+         */
         public Path() {
             this.edgeList = new ArrayList<>();
             this.nodeList = new ArrayList<>();
         }
 
+        /**
+         * Adds edges to the path.
+         * @param edges edges to be added.
+         */
         public void addEdges(final Edge... edges) {
             this.edgeList.addAll(Arrays.asList(edges));
             for (Edge edge : edges)
                 this.gain *= edge.getGain();
         }
 
+        /**
+         * Adds nodes to the path.
+         * @param nodes nodes to be added.
+         */
         public void addNodes(final Node... nodes) {
             this.nodeList.addAll(Arrays.asList(nodes));
         }
 
+        /**
+         * Checks if this path touches another path (intersect in a
+         * node/edge or more).
+         * @param path path to be checked for touching.
+         * @return true if they touch, false if not.
+         */
         public boolean touches(final Path path) {
             Set<Node> nodeSet = new HashSet<>(this.nodeList);
             for (Node node : path.nodeList)
@@ -265,6 +341,10 @@ public class Sfg {
             return false;
         }
 
+        /**
+         * Gets overall gain of the path.
+         * @return gain.
+         */
         public double getGain() {
             return this.gain;
         }
@@ -395,10 +475,17 @@ public class Sfg {
         }
     }
 
+    /**
+     * A metadata compilation for the SFG for a signal flow inside of it,
+     * contains the overall gain result, a list of forward paths copies and a
+     * list of loops copies.
+     * It's safe to change any of the values of the metadata without affecting
+     * the actual SFG.
+     */
     public static class SfgMetadata {
         private double result = 0;
-        List<Path> forwardPaths = null;
-        List<Path> loops = null;
+        private List<Path> forwardPaths = null;
+        private List<Path> loops = null;
 
         public SfgMetadata(final double result, final List<Path> forwardPaths
                 , final List<Path> loops) {
