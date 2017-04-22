@@ -5,7 +5,6 @@
 }
 
 .regular-button {
-                    -fx-padding: 0.7em 0.57em;
                     -fx-font-size: 14px;
                     -jfx-button-type: RAISED;
                     -fx-background-color: rgb(77,102,204);

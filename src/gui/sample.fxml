@@ -17,34 +17,46 @@
             <items>
                 <AnchorPane minHeight="200.0" minWidth="0.0" prefHeight="300.0" prefWidth="160.0">
                     <children>
-                        <StackPane fx:id="canvas" styleClass="canvas-boxes" AnchorPane.bottomAnchor="0.0"
-                                   AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <HBox layoutY="-5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
-                                <Canvas height="600.0" width="1075.0"/>
-                            </children>
-                        </StackPane>
-                        <HBox layoutX="950.0" layoutY="123.0" prefHeight="100.0" prefWidth="200.0"
-                              AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                            <children>
-                                <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="separator"/>
-                                <VBox prefWidth="175.0" spacing="30.0" HBox.hgrow="ALWAYS">
+                                <StackPane fx:id="canvas" styleClass="canvas-boxes">
                                     <children>
-                                        <JFXButton buttonType="RAISED" minWidth="75.0" onAction="#addNode"
-                                                   ripplerFill="#e0f2f1" styleClass="regular-button" text="Node"/>
-                                        <JFXButton buttonType="RAISED" layoutX="60.0" layoutY="60.0" minWidth="75.0"
-                                                   onAction="#addEdge" ripplerFill="#e0f2f1" styleClass="regular-button"
-                                                   text="Edge"/>
-                                        <JFXButton buttonType="RAISED" layoutX="60.0" layoutY="130.0" minWidth="75.0"
-                                                   onAction="#solveGraph" ripplerFill="#e0f2f1"
-                                                   styleClass="regular-button" text="Solve"/>
-                                        <JFXButton buttonType="RAISED" layoutX="70.0" layoutY="202.0" minWidth="75.0"
-                                                   onAction="#clearGraph" ripplerFill="#e0f2f1"
-                                                   styleClass="regular-button" text="Clear"/>
+                                        <Canvas height="600.0" width="1075.0"/>
                                     </children>
-                                    <padding>
-                                        <Insets bottom="60.0" left="60.0" right="60.0" top="60.0"/>
-                                    </padding>
-                                </VBox>
+                                </StackPane>
+                                <Separator orientation="VERTICAL" prefHeight="200.0" styleClass="separator"/>
+                                <StackPane>
+                                    <children>
+                                        <VBox>
+                                            <children>
+                                                <VBox prefWidth="175.0" spacing="30.0">
+                                                    <children>
+                                                        <JFXButton buttonType="RAISED" minWidth="75.0"
+                                                                   onAction="#addNode" ripplerFill="#e0f2f1"
+                                                                   styleClass="regular-button" text="Node"/>
+                                                        <JFXButton buttonType="RAISED" layoutX="60.0" layoutY="60.0"
+                                                                   minWidth="75.0" onAction="#addEdge"
+                                                                   ripplerFill="#e0f2f1" styleClass="regular-button"
+                                                                   text="Edge"/>
+                                                        <JFXButton buttonType="RAISED" layoutX="60.0" layoutY="130.0"
+                                                                   minWidth="75.0" onAction="#solveGraph"
+                                                                   ripplerFill="#e0f2f1" styleClass="regular-button"
+                                                                   text="Solve"/>
+                                                        <JFXButton buttonType="RAISED" layoutX="70.0" layoutY="202.0"
+                                                                   minWidth="75.0" onAction="#clearGraph"
+                                                                   ripplerFill="#e0f2f1" styleClass="regular-button"
+                                                                   text="Clear"/>
+                                                    </children>
+                                                    <padding>
+                                                        <Insets bottom="60.0" left="60.0" right="60.0" top="60.0"/>
+                                                    </padding>
+                                                </VBox>
+                                                <JFXListView/>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </StackPane>
                             </children>
                         </HBox>
                     </children>
