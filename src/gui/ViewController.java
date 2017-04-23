@@ -4,7 +4,9 @@ import com.jfoenix.controls.*;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -48,6 +50,9 @@ public class ViewController {
 
     @FXML
     private StackPane dialogParent;
+
+    @FXML
+    private JFXListView outputList;
 
     private Graph graph;
     private Sfg sfg;
@@ -148,10 +153,13 @@ public class ViewController {
     void clearGraph(final ActionEvent event) {
         this.graph.getNodeSet().clear();
         this.sfg.clear();
+        this.logger.clear();
         this.graph.addAttribute("ui.stylesheet", "url('" + this
                 .getClass().getClassLoader().getResource("gui/graph.css") + "')");
         this.graph.addAttribute("ui.quality");
         this.graph.addAttribute("ui.antialias");
+        this.outputList.getItems().clear();
+        resetGraphColors();
     }
 
     @FXML
@@ -303,6 +311,11 @@ public class ViewController {
             for (Sfg.Node node : forwardPaths.get(i).getNodeList())
                 log.append(node.getLabel() + " ");
             log.append("\n");
+            Hyperlink path = new Hyperlink("Path " + (i + 1));
+            final int finalI = i;
+            path.setOnAction(event -> colorizeGraphNodes(forwardPaths.get(
+                    finalI).getNodeList(), "#EF6C00"));
+            this.outputList.getItems().add(path);
         }
         return log.toString();
     }
@@ -310,10 +323,15 @@ public class ViewController {
     private String printLoops(final List<Sfg.Path> loops) {
         StringBuilder log = new StringBuilder();
         for (int i = 0; i < loops.size(); i++) {
-            log.append("Loop\t" + (i + 1) + ": ");
+            log.append("Loop " + (i + 1) + ": ");
             for (Sfg.Node node : loops.get(i).getNodeList())
                 log.append(node.getLabel() + " ");
             log.append("\n");
+            Hyperlink loop = new Hyperlink("Loop " + (i + 1));
+            final int finalI = i;
+            loop.setOnAction(event -> colorizeGraphNodes(loops.get(
+                    finalI).getNodeList(), "#E53935"));
+            this.outputList.getItems().add(loop);
         }
         return log.toString();
     }
@@ -380,6 +398,18 @@ public class ViewController {
         return isValidLabel(src) && isValidLabel(dest) && nodeExists(src) &&
                 nodeExists(dest) && !gain.isEmpty() &&
                 gain.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+    }
+
+    private void colorizeGraphNodes(final List<Sfg.Node> nodeList, String color) {
+        resetGraphColors();
+        for (Sfg.Node sfgNode : nodeList)
+            this.graph.getNode(sfgNode.getLabel()).addAttribute(
+                    "ui.style", "fill-color: " + color + ";");
+    }
+
+    private void resetGraphColors() {
+        for (Node node : this.graph.getNodeSet())
+            node.addAttribute("ui.style", "fill-color: #009688;");
     }
 }
 

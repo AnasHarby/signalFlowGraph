@@ -1,8 +1,9 @@
 node {
-        fill-color: #A7FFEB;
+        fill-color: #009688;
         size: 35px;
         stroke-mode: plain;
         stroke-color: #004D40;
+        text-color: white;
         stroke-width: 1px;
     }
 node.important {
@@ -13,5 +14,4 @@ edge {
     text-size: 20;
     text-color: red;
     text-background-mode: plain;
-
 }

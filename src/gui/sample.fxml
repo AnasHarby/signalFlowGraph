@@ -30,7 +30,7 @@
                                     <children>
                                         <VBox>
                                             <children>
-                                                <VBox prefWidth="175.0" spacing="30.0">
+                                                <VBox prefWidth="175.0" spacing="10.0">
                                                     <children>
                                                         <JFXButton buttonType="RAISED" minWidth="75.0"
                                                                    onAction="#addNode" ripplerFill="#e0f2f1"
@@ -52,7 +52,7 @@
                                                         <Insets bottom="60.0" left="60.0" right="60.0" top="60.0"/>
                                                     </padding>
                                                 </VBox>
-                                                <JFXListView/>
+                                                <JFXListView fx:id="outputList"/>
                                             </children>
                                         </VBox>
                                     </children>
