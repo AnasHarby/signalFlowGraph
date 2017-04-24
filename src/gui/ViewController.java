@@ -21,7 +21,7 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
-import sfg.Sfg;
+import sfg.*;
 
 import java.net.URL;
 import java.util.List;
@@ -150,7 +150,7 @@ public class ViewController {
     private void addEdgeUtil(final String src, final String dest, double gain) {
         Edge edge = this.graph.addEdge(src + dest, src, dest, true);
         edge.addAttribute("ui.label", Double.toString(gain));
-        this.sfg.addEdges(new Sfg.Edge(this.sfg.getNode(src),
+        this.sfg.addEdges(new sfg.Edge(this.sfg.getNode(src),
                 this.sfg.getNode(dest), gain));
     }
 
@@ -224,7 +224,7 @@ public class ViewController {
         Node n = graph.addNode(label);
         n.addAttribute("ui.label", label);
         n.addAttribute("ui.class", "big");
-        sfg.addNodes(new Sfg.Node(label));
+        sfg.addNodes(new sfg.Node(label));
     }
 
     @FXML
@@ -297,7 +297,7 @@ public class ViewController {
     }
 
     private void solveGraphUtil(final String start, final String end) {
-        Sfg.SfgMetadata metadata = this.sfg.solve(
+        SfgMetadata metadata = this.sfg.solve(
                 this.sfg.getNode(start), this.sfg.getNode(end));
         this.logger.appendText(printForwardPaths(metadata.getForwardPaths()));
         this.logger.appendText("----------------------------\n");
@@ -318,29 +318,29 @@ public class ViewController {
         this.initViewList();
     }
 
-    private String printForwardPaths(final List<Sfg.Path> forwardPaths) {
+    private String printForwardPaths(final List<Path> forwardPaths) {
         StringBuilder log = new StringBuilder();
         for (int i = 0; i < forwardPaths.size(); i++) {
             log.append("Path\t" + (i + 1) + ": ");
-            for (Sfg.Node node : forwardPaths.get(i).getNodeList())
+            for (sfg.Node node : forwardPaths.get(i).getNodeList())
                 log.append(node.getLabel() + " ");
             log.append("\n");
         }
         return log.toString();
     }
 
-    private String printLoops(final List<Sfg.Path> loops) {
+    private String printLoops(final List<Path> loops) {
         StringBuilder log = new StringBuilder();
         for (int i = 0; i < loops.size(); i++) {
             log.append("Loop " + (i + 1) + ": ");
-            for (Sfg.Node node : loops.get(i).getNodeList())
+            for (sfg.Node node : loops.get(i).getNodeList())
                 log.append(node.getLabel() + " ");
             log.append("\n");
         }
         return log.toString();
     }
 
-    private JFXPopup popUpLoops(final List<Sfg.Path> loops) {
+    private JFXPopup popUpLoops(final List<Path> loops) {
         JFXPopup loopsPop = new JFXPopup();
         VBox vBox = new VBox();
         for (int i = 0; i < loops.size(); i++) {
@@ -357,7 +357,7 @@ public class ViewController {
         return loopsPop;
     }
 
-    private JFXPopup popUpPaths(final List<Sfg.Path> forwardPaths) {
+    private JFXPopup popUpPaths(final List<Path> forwardPaths) {
         JFXPopup paths = new JFXPopup();
         VBox vBox = new VBox();
         for (int i = 0; i < forwardPaths.size(); i++) {
@@ -382,23 +382,25 @@ public class ViewController {
             if (outputList.getSelectionModel().getSelectedItem() instanceof Label) {
                 Label l = (Label) outputList.getSelectionModel().getSelectedItem();
                 if (l.getText().equals("Paths"))
-                    this.pathsPopup.show(this.outputList, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, e.getX(), e.getY());
+                    this.pathsPopup.show(this.outputList, JFXPopup.PopupVPosition
+                            .TOP, JFXPopup.PopupHPosition.LEFT, e.getX(), e.getY());
                 else if (l.getText().equals("Loops"))
-                    this.loopsPopup.show(this.outputList, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, e.getX(), e.getY());
+                    this.loopsPopup.show(this.outputList, JFXPopup.PopupVPosition
+                            .TOP, JFXPopup.PopupHPosition.LEFT, e.getX(), e.getY());
             }
             outputList.getSelectionModel().clearSelection();
         });
     }
 
-    private String printNonTouchingCombinations(final Sfg.Delta delta,
-                                                final List<Sfg.Path> loops) {
+    private String printNonTouchingCombinations(final Delta delta,
+                                                final List<Path> loops) {
         StringBuilder log = new StringBuilder();
         for (int k = 0; k < delta.getContainerList().size(); k++) {
-            Sfg.LoopGroupContainer container = delta.getContainerList().get(k);
+            LoopGroupContainer container = delta.getContainerList().get(k);
             log.append("Non touching loops of size " + (k + 1) + ": \n");
-            for (Sfg.LoopGroup loopGroup : container.getGroupList()) {
+            for (LoopGroup loopGroup : container.getGroupList()) {
                 log.append("(");
-                for (Sfg.Path loop : loopGroup.getLoopList()) {
+                for (Path loop : loopGroup.getLoopList()) {
                     log.append("L" + (loops.indexOf(loop) + 1) + " ");
                 }
                 log.deleteCharAt(log.length() - 1);
@@ -466,9 +468,9 @@ public class ViewController {
                 gain.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
     }
 
-    private void colorizeGraphNodes(final List<Sfg.Node> nodeList, final String cssClass) {
+    private void colorizeGraphNodes(final List<sfg.Node> nodeList, final String cssClass) {
         resetGraphColors();
-        for (Sfg.Node sfgNode : nodeList)
+        for (sfg.Node sfgNode : nodeList)
             this.graph.getNode(sfgNode.getLabel()).addAttribute(
                     "ui.class", cssClass);
     }

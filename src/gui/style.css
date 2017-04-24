@@ -46,7 +46,7 @@
                 }
 
 .jfx-list-cell:selected {
-        -fx-background-color: #3d8c91;
+        -fx-background-color: #00564e;
 }
 
 .jfx-list-cell {
@@ -58,7 +58,7 @@
 }
 
 .jfx-list-cell:hover {
-        -fx-background-color: #1bd79c;
+        -fx-background-color: #009688;
 }
 
 .jfx-list-view {
