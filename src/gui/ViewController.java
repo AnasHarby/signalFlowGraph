@@ -4,9 +4,9 @@ import com.jfoenix.controls.*;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Hyperlink;
+import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -54,6 +54,9 @@ public class ViewController {
     @FXML
     private JFXListView outputList;
 
+    private JFXPopup pathsPopup;
+    private JFXPopup loopsPopup;
+
     private Graph graph;
     private Sfg sfg;
 
@@ -64,6 +67,8 @@ public class ViewController {
                 .getClass().getClassLoader().getResource("gui/graph.css") + "')");
         this.graph.addAttribute("ui.quality");
         this.graph.addAttribute("ui.antialias");
+
+//        this.
     }
 
     @FXML
@@ -302,6 +307,15 @@ public class ViewController {
                 metadata.getLoops()));
         this.logger.appendText("----------------------------\n");
         this.logger.appendText("Result = " + metadata.getResult() + "\n");
+        this.pathsPopup = this.popUpPaths(metadata.getForwardPaths());
+        this.loopsPopup = this.popUpLoops(metadata.getLoops());
+        this.pathsPopup.setHideOnEscape(true);
+        this.pathsPopup.setAutoHide(true);
+        this.pathsPopup.setConsumeAutoHidingEvents(true);
+        this.loopsPopup.setHideOnEscape(true);
+        this.loopsPopup.setAutoHide(true);
+        this.loopsPopup.setConsumeAutoHidingEvents(true);
+        this.initViewList();
     }
 
     private String printForwardPaths(final List<Sfg.Path> forwardPaths) {
@@ -311,11 +325,6 @@ public class ViewController {
             for (Sfg.Node node : forwardPaths.get(i).getNodeList())
                 log.append(node.getLabel() + " ");
             log.append("\n");
-            Hyperlink path = new Hyperlink("Path " + (i + 1));
-            final int finalI = i;
-            path.setOnAction(event -> colorizeGraphNodes(forwardPaths.get(
-                    finalI).getNodeList(), "#EF6C00"));
-            this.outputList.getItems().add(path);
         }
         return log.toString();
     }
@@ -327,13 +336,58 @@ public class ViewController {
             for (Sfg.Node node : loops.get(i).getNodeList())
                 log.append(node.getLabel() + " ");
             log.append("\n");
-            Hyperlink loop = new Hyperlink("Loop " + (i + 1));
-            final int finalI = i;
-            loop.setOnAction(event -> colorizeGraphNodes(loops.get(
-                    finalI).getNodeList(), "#E53935"));
-            this.outputList.getItems().add(loop);
         }
         return log.toString();
+    }
+
+    private JFXPopup popUpLoops(final List<Sfg.Path> loops) {
+        JFXPopup loopsPop = new JFXPopup();
+        VBox vBox = new VBox();
+        for (int i = 0; i < loops.size(); i++) {
+            JFXButton button = new JFXButton("Loop " + (i + 1));
+            button.setPadding(new Insets(10));
+            final int I = i;
+            button.setOnAction(e -> {
+                colorizeGraphNodes(loops.get(I).getNodeList(), "loop");
+                loopsPop.hide();
+            });
+            vBox.getChildren().add(button);
+        }
+        loopsPop.setPopupContent(vBox);
+        return loopsPop;
+    }
+
+    private JFXPopup popUpPaths(final List<Sfg.Path> forwardPaths) {
+        JFXPopup paths = new JFXPopup();
+        VBox vBox = new VBox();
+        for (int i = 0; i < forwardPaths.size(); i++) {
+            JFXButton button = new JFXButton("Path " + (i + 1));
+            button.setPadding(new Insets(10));
+            final int I = i;
+            button.setOnAction(e -> {
+                colorizeGraphNodes(forwardPaths.get(I).getNodeList(), "path");
+                paths.hide();
+            });
+            vBox.getChildren().add(button);
+        }
+        paths.setPopupContent(vBox);
+        return paths;
+    }
+
+    private void initViewList() {
+        Label paths = new Label("Paths");
+        Label loops = new Label("Loops");
+        this.outputList.getItems().addAll(paths, loops);
+        this.outputList.setOnMouseClicked(e -> {
+            if (outputList.getSelectionModel().getSelectedItem() instanceof Label) {
+                Label l = (Label) outputList.getSelectionModel().getSelectedItem();
+                if (l.getText().equals("Paths"))
+                    this.pathsPopup.show(this.outputList, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, e.getX(), e.getY());
+                else if (l.getText().equals("Loops"))
+                    this.loopsPopup.show(this.outputList, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, e.getX(), e.getY());
+            }
+            outputList.getSelectionModel().clearSelection();
+        });
     }
 
     private String printNonTouchingCombinations(final Sfg.Delta delta,
@@ -363,6 +417,18 @@ public class ViewController {
         this.logger.textProperty().addListener(e -> logger.setScrollTop(Double.MAX_VALUE));
 
         this.initCanvas();
+        this.outputList.setOnMouseEntered(e -> {
+            this.outputList.setExpanded(true);
+            this.outputList.depthProperty().setValue(1);
+        });
+        this.outputList.setOnMouseExited(e -> {
+            this.outputList.setExpanded(false);
+            this.outputList.depthProperty().setValue(0);
+        });
+
+        this.outputList.setCellVerticalMargin(10d);
+        this.outputList.setVerticalGap(10d);
+
     }
 
     private void initCanvas() {
@@ -400,16 +466,16 @@ public class ViewController {
                 gain.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
     }
 
-    private void colorizeGraphNodes(final List<Sfg.Node> nodeList, String color) {
+    private void colorizeGraphNodes(final List<Sfg.Node> nodeList, final String cssClass) {
         resetGraphColors();
         for (Sfg.Node sfgNode : nodeList)
             this.graph.getNode(sfgNode.getLabel()).addAttribute(
-                    "ui.style", "fill-color: " + color + ";");
+                    "ui.class", cssClass);
     }
 
     private void resetGraphColors() {
         for (Node node : this.graph.getNodeSet())
-            node.addAttribute("ui.style", "fill-color: #009688;");
+            node.removeAttribute("ui.class");
     }
 }
 

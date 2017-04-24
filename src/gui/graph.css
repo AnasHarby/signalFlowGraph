@@ -6,9 +6,12 @@ node {
         text-color: white;
         stroke-width: 1px;
     }
-node.important {
-        fill-color: red;
+node.loop {
+        fill-color: #E53935;
     }
+    node.path {
+            fill-color: #EF6C00;
+        }
 edge {
     text-alignment: center;
     text-size: 20;
