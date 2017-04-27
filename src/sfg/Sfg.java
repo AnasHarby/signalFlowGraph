@@ -42,8 +42,17 @@ public class Sfg {
      * @param edges edges to be added.
      */
     public void addEdges(final Edge... edges) {
-        for (Edge edge : edges)
-            this.adj.get(edge.getSrc()).add(edge);
+        for (Edge edge : edges) {
+            boolean isDuplicate = false;
+            for (Edge duplicate : this.adj.get(edge.getSrc()))
+                if (duplicate.getDest().equals(edge.getDest())) {
+                    duplicate.setGain(duplicate.getGain() * edge.getGain());
+                    isDuplicate = true;
+                    break;
+                }
+            if (!isDuplicate)
+                this.adj.get(edge.getSrc()).add(edge);
+        }
     }
 
     /**

@@ -17,6 +17,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.IdAlreadyInUseException;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.ViewPanel;
@@ -149,8 +150,15 @@ public class ViewController {
     }
 
     private void addEdgeUtil(final String src, final String dest, double gain) {
-        Edge edge = this.graph.addEdge(src + dest, src, dest, true);
-        edge.addAttribute("ui.label", Double.toString(gain));
+        try {
+            Edge edge = this.graph.addEdge(src + dest, src, dest, true);
+            edge.addAttribute("ui.label", Double.toString(gain));
+        } catch (IdAlreadyInUseException e) {
+            Edge edge = this.graph.getEdge(src + dest);
+            double gainLabel = Double.parseDouble(edge.getAttribute("ui.label"));
+            gainLabel *= gain;
+            edge.setAttribute("ui.label", Double.toString(gainLabel));
+        }
         this.sfg.addEdges(new sfg.Edge(this.sfg.getNode(src),
                 this.sfg.getNode(dest), gain));
     }

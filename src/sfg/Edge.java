@@ -43,4 +43,16 @@ public class Edge {
     public double getGain() {
         return gain;
     }
+
+    public void setSrc(final Node src) {
+        this.src = src;
+    }
+
+    public void setDest(final Node dest) {
+        this.dest = dest;
+    }
+
+    public void setGain(final double gain) {
+        this.gain = gain;
+    }
 }
