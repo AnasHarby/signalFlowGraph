@@ -173,7 +173,7 @@ public class ViewController {
         this.graph.addAttribute("ui.quality");
         this.graph.addAttribute("ui.antialias");
         this.outputList.getItems().clear();
-        resetGraphColors();
+        this.resetGraphColors();
     }
 
     @FXML
@@ -264,6 +264,8 @@ public class ViewController {
         addButton.setDefaultButton(true);
         addButton.setOnAction(e -> {
             this.logger.clear();
+            this.outputList.getItems().clear();
+            this.resetGraphColors();
             solveGraphUtil(startTF.getText(), endTF.getText());
             jfxDialog.close();
         });

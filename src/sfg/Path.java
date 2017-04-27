@@ -21,6 +21,7 @@ public class Path {
 
     /**
      * Adds edges to the path.
+     *
      * @param edges edges to be added.
      */
     public void addEdges(final Edge... edges) {
@@ -33,6 +34,7 @@ public class Path {
 
     /**
      * Adds nodes to the path.
+     *
      * @param nodes nodes to be added.
      */
     public void addNodes(final Node... nodes) {
@@ -42,6 +44,7 @@ public class Path {
     /**
      * Checks if this path touches another path (intersect in a
      * node/edge or more).
+     *
      * @param path path to be checked for touching.
      * @return true if they touch, false if not.
      */
@@ -55,6 +58,7 @@ public class Path {
 
     /**
      * Gets overall gain of the path.
+     *
      * @return gain.
      */
     public double getGain() {

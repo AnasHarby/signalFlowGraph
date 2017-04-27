@@ -8,8 +8,9 @@ public class Node {
 
     /**
      * Creates a new node.
+     *
      * @param label label for this node, this is used later in SFG as an
-     * identifier.
+     *              identifier.
      */
     public Node(final String label) {
         this.label = label;
@@ -17,6 +18,7 @@ public class Node {
 
     /**
      * Gets label for this node.
+     *
      * @return node label.
      */
     public String getLabel() {

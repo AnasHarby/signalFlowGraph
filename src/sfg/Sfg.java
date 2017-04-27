@@ -28,6 +28,7 @@ public class Sfg {
 
     /**
      * Adds nodes to the SFG.
+     *
      * @param nodes nodes to be added.
      */
     public void addNodes(final Node... nodes) {
@@ -39,6 +40,7 @@ public class Sfg {
 
     /**
      * Adds edges to the SFG.
+     *
      * @param edges edges to be added.
      */
     public void addEdges(final Edge... edges) {
@@ -70,6 +72,7 @@ public class Sfg {
     /**
      * Gets a node from the SFG by its label, changing a node's label is not
      * allowed.
+     *
      * @param label label of the node to be returned.
      * @return {@link Node} with the equivalent label.
      */
@@ -79,8 +82,9 @@ public class Sfg {
 
     /**
      * Solves the SFG and returns the result enclosed in {@link SfgMetadata}.
+     *
      * @param start Starting node for the signal.
-     * @param end Ending node for the signal.
+     * @param end   Ending node for the signal.
      * @return {@link SfgMetadata} object which has the gain result and a copy
      * of forward paths and loops for this signal.
      */

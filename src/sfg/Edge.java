@@ -10,7 +10,8 @@ public class Edge {
 
     /**
      * Creates a new edge.
-     * @param src Source node.
+     *
+     * @param src  Source node.
      * @param dest Destination node.
      * @param gain gain of the edge.
      */
@@ -22,34 +23,37 @@ public class Edge {
 
     /**
      * Gets the edge's source node.
+     *
      * @return source node.
      */
     public Node getSrc() {
         return src;
     }
 
+    public void setSrc(final Node src) {
+        this.src = src;
+    }
+
     /**
      * Gets the edge's destination node.
+     *
      * @return destination node.
      */
     public Node getDest() {
         return dest;
     }
 
+    public void setDest(final Node dest) {
+        this.dest = dest;
+    }
+
     /**
      * Gets gain of the edge.
+     *
      * @return gain.
      */
     public double getGain() {
         return gain;
-    }
-
-    public void setSrc(final Node src) {
-        this.src = src;
-    }
-
-    public void setDest(final Node dest) {
-        this.dest = dest;
     }
 
     public void setGain(final double gain) {
