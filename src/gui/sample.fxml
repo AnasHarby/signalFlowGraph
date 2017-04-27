@@ -3,9 +3,7 @@
 <?import com.jfoenix.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="dialogParent" xmlns="http://javafx.com/javafx/8.0.111"
@@ -52,6 +50,7 @@
                                                         <Insets bottom="60.0" left="60.0" right="60.0" top="60.0"/>
                                                     </padding>
                                                 </VBox>
+                                                <Separator prefWidth="200.0" styleClass="separator"/>
                                                 <JFXListView fx:id="outputList"/>
                                             </children>
                                         </VBox>
