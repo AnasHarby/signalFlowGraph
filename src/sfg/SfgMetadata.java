@@ -14,16 +14,13 @@ import java.util.Map;
  */
 public class SfgMetadata {
     private double result = 0;
-    private List<Path> forwardPaths = null;
     private List<Path> loops = null;
     private Delta delta = null;
     private Map<Path, Delta> forwardPathsDeltas = null;
 
-    public SfgMetadata(final double result, final List<Path> forwardPaths
-            , final List<Path> loops, final Delta delta, final Map<Path
-            , Delta> forwardPathsDeltas) {
+    public SfgMetadata(final double result, final List<Path> loops, final Delta delta
+            , final Map<Path, Delta> forwardPathsDeltas) {
         this.result = result;
-        this.forwardPaths = clonePaths(forwardPaths);
         this.loops = clonePaths(loops);
         this.delta = (Delta) delta.clone();
         this.forwardPathsDeltas = cloneDeltas(forwardPathsDeltas);
@@ -34,7 +31,7 @@ public class SfgMetadata {
     }
 
     public List<Path> getForwardPaths() {
-        return this.forwardPaths;
+        return new ArrayList<>(this.forwardPathsDeltas.keySet());
     }
 
     public List<Path> getLoops() {

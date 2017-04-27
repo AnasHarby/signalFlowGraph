@@ -82,7 +82,7 @@ public class Sfg {
         this.forwardPathsDeltas = getForwardPathsDeltas(this.forwardPaths, this.delta);
         double res = getResult(this.delta, this.forwardPathsDeltas,
                 this.forwardPaths);
-        return new SfgMetadata(res, this.forwardPaths, this.loops, this.delta,
+        return new SfgMetadata(res, this.loops, this.delta,
                 this.forwardPathsDeltas);
     }
 

@@ -25,6 +25,7 @@ import sfg.*;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -254,6 +255,7 @@ public class ViewController {
         addButton.setDisable(true);
         addButton.setDefaultButton(true);
         addButton.setOnAction(e -> {
+            this.logger.clear();
             solveGraphUtil(startTF.getText(), endTF.getText());
             jfxDialog.close();
         });
@@ -299,7 +301,8 @@ public class ViewController {
     private void solveGraphUtil(final String start, final String end) {
         SfgMetadata metadata = this.sfg.solve(
                 this.sfg.getNode(start), this.sfg.getNode(end));
-        this.logger.appendText(printForwardPaths(metadata.getForwardPaths()));
+        this.logger.appendText(printForwardPaths(metadata.getForwardPaths(),
+                metadata.getForwardPathsDeltas()));
         this.logger.appendText("----------------------------\n");
         this.logger.appendText(printLoops(metadata.getLoops()));
         this.logger.appendText("----------------------------\n");
@@ -318,12 +321,14 @@ public class ViewController {
         this.initViewList();
     }
 
-    private String printForwardPaths(final List<Path> forwardPaths) {
+    private String printForwardPaths(final List<Path> forwardPaths,
+                                     final Map<Path, Delta> deltas) {
         StringBuilder log = new StringBuilder();
         for (int i = 0; i < forwardPaths.size(); i++) {
-            log.append("Path\t" + (i + 1) + ": ");
+            log.append("Path" + (i + 1) + ": ");
             for (sfg.Node node : forwardPaths.get(i).getNodeList())
                 log.append(node.getLabel() + " ");
+            log.append("\tDelta = " + deltas.get(forwardPaths.get(i)).getGain());
             log.append("\n");
         }
         return log.toString();
